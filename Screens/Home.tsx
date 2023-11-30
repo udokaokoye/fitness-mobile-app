@@ -5,8 +5,9 @@ import {
   ScrollView,
   TouchableOpacity,
   StatusBar,
+  RefreshControl,
 } from "react-native";
-import React, { useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState } from "react";
 import HomeHeader from "../Components/HomeHeader";
 import { ThemeContext } from "../Store/ThemeContext";
 import FoodSearchInput from "../Components/FoodSearchInput";
@@ -16,7 +17,7 @@ import ExerciseComponent from "../Components/ExerciseComponent";
 import CaloriesHistory from "../Components/CaloriesHistory";
 import GoalSummary from "../Components/GoalSummary";
 import CaloriesBreakdown from "../Components/CaloriesBreakdown";
-import { Icon } from "@rneui/base";
+import { Icon, Tooltip } from "@rneui/base";
 import { getUsersAccessToken } from "../utils/lib";
 import CaloriesDisplayCard from "../Components/CaloriesDisplayCard";
 import MacrosInfo from "../Components/MacrosInfo";
@@ -25,18 +26,21 @@ import { RootState, UserMealsProp } from "../utils/types";
 import { AuthContext } from "../Store/AuthContext";
 import moment from "moment";
 import { MealsHistoryContext } from "../Store/MealsHistoryContext";
-import { logMeal } from "../redux/reducers/caloriesSlice";
+import { logMeal, logMealFromBackend } from "../redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice";
 const Home = ({ navigation }: any) => {
-  const ipAddress = "172.16.137.203";
+  const ipAddress = "192.168.1.167";
   const user = useContext(AuthContext)?.user;
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
-  const [accessToken, setaccessToken] = useState("");
+  const [refetchMealHistory, setrefetchMealHistory] = useState(0);
   const mealsHistoryContext = useContext(MealsHistoryContext)
+  const [tooltipOpen, settooltipOpen] = useState(false)
 
   const dispatch = useDispatch();
+  const [refreshing, setRefreshing] = useState(false);
 
   const setmealHistory = mealsHistoryContext?.setmealHistory
+  const mealHistory = mealsHistoryContext?.mealHistory;
   useEffect(() => {
     // alert("hello")
     fetchMealHistory()
@@ -114,8 +118,10 @@ const Home = ({ navigation }: any) => {
       fatTotal += parseInt(foodData.fat);
     })
 
+    // console.log(initialMeals)
+
     dispatch(
-      logMeal({
+      logMealFromBackend({
         caloriesIN: caloriesTotal,
         carbohydrate: carbsTotal,
         protien: proteinTotal,
@@ -142,7 +148,17 @@ const Home = ({ navigation }: any) => {
             protien: initialMeals.dinner.macros.protien,
             fat: initialMeals.dinner.macros.fat,
     }))
+    setRefreshing(false)
   }
+
+  const onRefresh = useCallback(() => {
+    setRefreshing(true);
+    fetchMealHistory();
+    settooltipOpen(true)
+    setTimeout(() => {
+      settooltipOpen(false)
+    }, 2000);
+  }, []);
   
 
   const theme = themeContext.theme;
@@ -155,7 +171,7 @@ const Home = ({ navigation }: any) => {
     >
       <StatusBar backgroundColor={theme.background} />
 
-      <ScrollView>
+      <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className=" flex-1">
           <HomeHeader theme={theme} />
           <FoodSearchInput navigation={navigation} theme={theme} />
@@ -163,7 +179,12 @@ const Home = ({ navigation }: any) => {
           <CaloriesDisplayCard theme={theme} calories={caloriesInformation} />
           <MacrosInfo theme={theme}  calories={caloriesInformation} />
           {/* <GoalSummary theme={theme} /> */}
+
+
+          <Tooltip containerStyle={{width: '60%', margin: 0, padding: 0}} backgroundColor={theme.accentColor} withOverlay={false} closeOnlyOnBackdropPress visible={tooltipOpen} popover={<Text className="text-white text-center"> Updated </Text>} withPointer={false} />
+
           <CaloriesBreakdown navigation={navigation} theme={theme} meals={mealsInformation} />
+
           <CaloriesHistory navigation={navigation} theme={theme} />
 
           {/* <ExerciseComponent theme={theme} /> */}

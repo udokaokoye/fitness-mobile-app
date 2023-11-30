@@ -149,12 +149,12 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
             cx={width / 4}
             cy={height / 4}
             r={R}
-            stroke={overflowProgressColor ? overflowProgressColor : "white"}
+            stroke={overflowProgressColor ? overflowProgressColor : "#e1341e"}
             strokeWidth={strokeSize}
             strokeDasharray={CIRCLE_LENGTH}
             animatedProps={overflowAnimatedProps}
             strokeLinecap={"round"}
-            // fill={percentageUsed > 100 ? 'red' : 'black'}
+            fill={'transparent'}
           />
         </Svg>
       )}
@@ -173,6 +173,7 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
             strokeDasharray={CIRCLE_LENGTH}
             animatedProps={overflowAnimatedProps}
             strokeLinecap={"round"}
+            fill={'transparent'}
             // fill={percentageUsed > 100 ? 'red' : 'black'}
           />
         </Svg>

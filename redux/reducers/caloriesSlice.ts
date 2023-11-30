@@ -51,8 +51,31 @@ const caloriesSlice = createSlice({
       };
      return updatedData
     },
+    logMealFromBackend: (state, action:PayloadAction<logMealProps>) => {
+      const {macros, dailyCaloriesGoal, currentCaloriesConsumption} = state
+      const updatedMacros = {
+          protien: {
+              value: action.payload.protien,
+              goal: macros.protien.goal,
+            },
+            carbohydrate: {
+              value: action.payload.carbohydrate,
+              goal: macros.carbohydrate.goal,
+            },
+            fat: {
+              value:action.payload.fat,
+              goal: macros.fat.goal,
+            },
+      }
+    const updatedData = {
+      dailyCaloriesGoal: dailyCaloriesGoal,
+      currentCaloriesConsumption: action.payload.caloriesIN,
+      macros: updatedMacros
+    };
+   return updatedData
+  },
   },
 });
 
-export const { logMeal } = caloriesSlice.actions;
+export const { logMeal, logMealFromBackend } = caloriesSlice.actions;
 export default caloriesSlice.reducer;

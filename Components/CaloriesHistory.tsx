@@ -21,10 +21,10 @@ const mealHistory = mealsHistoryContext?.mealHistory
       <Text style={{color: theme.accentColor}} className=' text-base'>Show More</Text>
       </View>
 
-        {mealHistory?.map((foodHistory: MealHistoryProps) => (
+        {mealHistory?.map((foodHistory: any) => (
                   <TouchableOpacity onPress={() => navigation.navigate('foodDetails', {
                     foodId: foodHistory.apiFoodID
-                  })} key={foodHistory.apiFoodID} style={{backgroundColor: theme.background2}} className=' flex-row  justify-between items-center mt-5 rounded-lg  p-3'>
+                  })} key={foodHistory.created_at} style={{backgroundColor: theme.background2}} className=' flex-row  justify-between items-center mt-5 rounded-lg  p-3'>
                   <View className='flex-row gap-x-5'>
                   {/* <View className=' rounded-full items-center justify-center' style={{backgroundColor: theme.accentColor, width: 50, height: 50}}>
                    <Icon name='utensils' type='font-awesome-5' />
@@ -37,7 +37,7 @@ const mealHistory = mealsHistoryContext?.mealHistory
                        <Text className=' text-gray-400'>{foodHistory.serving} serv</Text>
                        <Text className=' text-gray-400'>{foodHistory.protein}g protein</Text>
                        <Text className=' text-gray-400'>{foodHistory.fat}g fat</Text>
-                       <Text className=' text-gray-400'>{foodHistory.carbs}g carbs</Text>
+                       <Text className=' text-gray-400'>{foodHistory.carbohydrate}g carbs</Text>
                        </View>
                    </View>
                   </View>

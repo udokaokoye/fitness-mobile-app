@@ -27,7 +27,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     const [signupStage, setsignupStage] = useState("basic-info");
     const [passwordInputError, setpasswordInputError] = useState(false);
 
-    const ipAddress = "172.16.137.203";
+    const ipAddress = "192.168.1.167";
     const [caloriesGoal, setcaloriesGoal] = useState("");
     const [proteinGoal, setproteinGoal] = useState("");
     const [fatGoal, setfatGoal] = useState("");

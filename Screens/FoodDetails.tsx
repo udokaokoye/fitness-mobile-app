@@ -36,6 +36,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
   const [open, setopen] = useState(true);
   const [value, setvalue] = useState("hmm");
   const [serving, setserving] = useState(1);
+  const [note, setnote] = useState('')
   const [meal, setmeal] = useState<string>("");
   const [food, setfood] = useState<FoodProps | null>(null);
   const [foodMarkedAsFavorite, setfoodMarkedAsFavorite] = useState(false);
@@ -169,7 +170,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
       name: food?.food_name,
       apiFoodID: food?.food_id,
       serving: serving,
-      notes: "No notes",
+      notes: note,
     }
 
     const nutrition = {
@@ -187,7 +188,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
     // formData.append('nutrition', JSON.stringify(nutrition))
 
 
-    const response = await fetch("http://192.168.1.173/fitness-backend/api/food/index.php", {
+    const response = await fetch("http://192.168.1.167/fitness-backend/api/food/index.php", {
       method: "POST",
       body: JSON.stringify({
         food: foodObject,
@@ -200,7 +201,13 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
     console.log(data)
     // return;
 
-    navigation.navigate("searchFood");
+    if (data.status == 201) {
+      navigation.navigate("searchFood");
+      setnote("")
+    } else {
+      alert("Unable to add note at this time.")
+    }
+
   };
 
   if (!food) {
@@ -435,6 +442,8 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
                 height: 150,
                 borderColor: theme.lighterText,
               }}
+              onChangeText={(txt) => setnote(txt)}
+              value={note}
             />
           </View>
 

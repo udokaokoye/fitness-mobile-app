@@ -14,7 +14,7 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
   const [error, seterror] = useState(null);
   const authContext = useContext(AuthContext)
 
-  const ipAddress = "172.16.137.203";
+  const ipAddress = "192.168.1.167";
   const loginHandler = async () => {
     const formData = new FormData()
 

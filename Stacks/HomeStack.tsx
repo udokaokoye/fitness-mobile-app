@@ -7,6 +7,8 @@ import SearchFood from "../Screens/SearchFood";
 import BarcodeScan from "../Screens/BarcodeScan";
 import FoodDetails from "../Screens/FoodDetails";
 import MealDetailsScreen from "../Screens/MealDetailsScreen";
+import LoggedFoodDetails from "../Screens/LoggedFoodDetails";
+
 
 const HomeStackScreen = createNativeStackNavigator();
 
@@ -17,6 +19,7 @@ const HomeStack = () => {
     <HomeStackScreen.Screen name="barcodeScan" component={BarcodeScan} options={{headerShown: false}} />
     <HomeStackScreen.Screen name="foodDetails" component={FoodDetails} options={{headerShown: false}} />
     <HomeStackScreen.Screen name="mealDetails" component={MealDetailsScreen} options={{headerShown: false}} />
+    <HomeStackScreen.Screen name="loggedFoodDetails" component={LoggedFoodDetails} options={{headerShown: false}} />
   </HomeStackScreen.Navigator>;
 };
 
