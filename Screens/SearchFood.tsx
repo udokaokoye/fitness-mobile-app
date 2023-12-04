@@ -11,7 +11,10 @@ import { blackTheme } from "../Store/themes";
 import { ThemeContext } from "../Store/ThemeContext";
 import { Icon } from "@rneui/base";
 import {
+  getUserSearchHistory,
   getUsersAccessToken,
+  removeUserSearchHistory,
+  saveUserSearch,
   searchFoodFromApi,
   suggestText,
 } from "../utils/lib";
@@ -26,6 +29,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
   const [suggestions, setsuggestions] = useState([]);
   const [showaddIconMenu, setshowaddIconMenu] = useState(null);
   const [timer, setTimer] = useState<any>(null);
+  const [searchHistory, setsearchHistory] = useState([]);
 
   useEffect(() => {
     const fetchToken = async () => {
@@ -33,7 +37,9 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
       setaccessToken(token);
     };
     fetchToken();
+    fetchUserSearchHistory();
   }, []);
+
   useEffect(() => {
     // Clear the timer when the component unmounts to prevent memory leaks
     return () => {
@@ -43,10 +49,8 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
     };
   }, []);
 
-  const testFunction = () => {
-    fetch("https://jsonplaceholder.typicode.com/todos/1")
-      .then((response) => response.json())
-      .then((json) => console.log(json));
+  const fetchUserSearchHistory = async () => {
+    setsearchHistory(await getUserSearchHistory());
   };
 
   const handleChange = (text: string) => {
@@ -155,6 +159,49 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
 
+        {searchHistory?.length > 0 &&
+          searchResults?.length == 0 &&
+          suggestions?.length == 0 && (
+            <View className="mx-5 mt-5 ">
+              <Text className="text-lg">Search History</Text>
+
+              {searchHistory?.map((search, index) => (
+                <TouchableOpacity
+                  key={index}
+                  // style={{width: '100%'}}
+                  className="flex-row  items-center mt-5 rounded-3xl "
+                  onPress={() => {
+                    searchFoodFromApi(accessToken, search, setsearchResults);
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: theme.lighterBackground,
+                      width: 30,
+                      height: 30,
+                    }}
+                    className="p-2 rounded-full justify-center items-center "
+                  >
+                    <Icon
+                      size={16}
+                      name="search"
+                      type="evilicons"
+                      color={"#ccc"}
+                    />
+                  </View>
+
+                  <Text className=" ml-4" style={{ color: theme.text }}>{search}</Text>
+
+                  <TouchableOpacity onPress={async() => {
+                   setsearchHistory( await removeUserSearchHistory(search))
+                  }} className=" ml-auto p-2">
+                    <Icon color={'#ff5c55'} name="close" type="antdesign" />
+                  </TouchableOpacity>
+                </TouchableOpacity>
+              ))}
+            </View>
+          )}
+
         <View
           className="mx-5"
           // style={{backgroundColor: "#0e0f11"}}
@@ -171,9 +218,10 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                 <TouchableOpacity
                   key={index}
                   className="flex-row gap-x-5 items-center mt-5 rounded-3xl"
-                  onPress={() =>
-                    searchFoodFromApi(accessToken, item, setsearchResults)
-                  }
+                  onPress={() => {
+                    saveUserSearch(item);
+                    searchFoodFromApi(accessToken, item, setsearchResults);
+                  }}
                 >
                   <View
                     style={{
@@ -265,11 +313,11 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                       className=" border-b border-b-gray-600 h-12  justify-center items-center"
                       style={{ width: "100%" }}
                       onPress={() => {
-                        setshowaddIconMenu(null)
+                        setshowaddIconMenu(null);
                         navigation.navigate("foodDetails", {
                           foodId: item.food_id,
-                          meal: 'B'
-                        })
+                          meal: "B",
+                        });
                       }}
                     >
                       <Text>Breakfast</Text>
@@ -278,11 +326,11 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                       className=" border-b border-b-gray-600 h-12  justify-center items-center"
                       style={{ width: "100%" }}
                       onPress={() => {
-                        setshowaddIconMenu(null)
+                        setshowaddIconMenu(null);
                         navigation.navigate("foodDetails", {
                           foodId: item.food_id,
-                          meal: 'L'
-                        })
+                          meal: "L",
+                        });
                       }}
                     >
                       <Text>Lunch</Text>
@@ -291,11 +339,11 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                       className=" border-b border-b-gray-600 h-12  justify-center items-center "
                       style={{ width: "100%" }}
                       onPress={() => {
-                        setshowaddIconMenu(null)
+                        setshowaddIconMenu(null);
                         navigation.navigate("foodDetails", {
                           foodId: item.food_id,
-                          meal: 'D'
-                        })
+                          meal: "D",
+                        });
                       }}
                     >
                       <Text>Dinner</Text>
@@ -339,14 +387,12 @@ export const FoodResult: React.FC<CommonThemeProp & FoodResultProps> = ({
 }) => {
   return (
     <TouchableOpacity
-      onPress={() =>
-        {
-          setshowaddIconMenu(null)
-          navigation.navigate("foodDetails", {
-            foodId: result.food_id,
-          })
-        }
-      }
+      onPress={() => {
+        setshowaddIconMenu(null);
+        navigation.navigate("foodDetails", {
+          foodId: result.food_id,
+        });
+      }}
       style={{ backgroundColor: theme.lighterBackground }}
       className="mx-5 flex-row justify-between items-center px-3 py-2 rounded-lg"
     >
