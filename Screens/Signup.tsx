@@ -14,6 +14,7 @@ import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../Store/AuthContext";
 import { Picker } from "@react-native-picker/picker";
 import { heightData } from "../utils/lib";
+import { Icon } from "@rneui/base";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -38,10 +39,10 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [goalWeight, setgoalWeight] = useState("");
 
   const [error, seterror] = useState(null);
-  const [signupStage, setsignupStage] = useState("profile-1");
+  const [signupStage, setsignupStage] = useState("diet");
   const [passwordInputError, setpasswordInputError] = useState(false);
 
-  const ipAddress = "192.168.1.167";
+  const ipAddress = "192.168.1.201";
   const [caloriesGoal, setcaloriesGoal] = useState("");
   const [proteinGoal, setproteinGoal] = useState("");
   const [fatGoal, setfatGoal] = useState("");
@@ -264,7 +265,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setage(itemValue);
                     }}
-                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {ageRange.map((range) => (
                       <Picker.Item
@@ -285,7 +286,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setgender(itemValue);
                     }}
-                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {genderRange.map((range) => (
                       <Picker.Item
@@ -319,7 +320,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setheight(itemValue);
                     }}
-                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {heightData.map((heightInfo) => (
                       <Picker.Item
@@ -423,6 +424,18 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
             <Text className="text-center text-lg font-bold">
               Dietary Preferences
             </Text>
+
+            <Text className="text-lg mt-5">Favorite Food</Text>
+            <TouchableOpacity className="mt-2 flex-row items-center">
+              <Text>Add</Text>
+              <Icon color={theme.accentColor} name="add" />
+            </TouchableOpacity>
+
+            <Text className="text-lg mt-5">Disliked Food Food</Text>
+            <TouchableOpacity className="mt-2 flex-row items-center">
+              <Text>Add</Text>
+              <Icon color={theme.accentColor} name="add" />
+            </TouchableOpacity>
           </>
         )}
 
