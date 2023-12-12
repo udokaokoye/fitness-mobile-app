@@ -4,8 +4,9 @@ import {
   SafeAreaView,
   TextInput,
   TouchableOpacity,
+  Dimensions,
 } from "react-native";
-import React, { useState, useContext, useEffect } from "react";
+import React, { useState, useContext, useEffect, useRef } from "react";
 import { NavigationProps } from "../utils/commonProps";
 import { ThemeContext } from "../Store/ThemeContext";
 import { blackTheme } from "../Store/themes";
@@ -13,20 +14,23 @@ import moment from "moment";
 import AsyncStorage from "@react-native-async-storage/async-storage";
 import { AuthContext } from "../Store/AuthContext";
 import { Picker } from "@react-native-picker/picker";
-import { heightData } from "../utils/lib";
+import { getUsersAccessToken, heightData, suggestText } from "../utils/lib";
 import { Icon } from "@rneui/base";
+import RBSheet from "react-native-raw-bottom-sheet";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
   const authContext = useContext(AuthContext);
-
+  const [accessToken, setaccessToken] = useState("");
   // Basic Info
   const [email, setemail] = useState("leviokoye@gmail.com1");
   const [firstName, setfirstName] = useState("sdfsd");
   const [lastName, setlastName] = useState("fsdfs");
   const [password, setpassword] = useState("advantage@0907756");
   const [passwordConfirm, setpasswordConfirm] = useState("advantage@0907756");
+
+  const refRBSheet = useRef<any>();
 
   // Profile Info
   const [age, setage] = useState(null);
@@ -38,15 +42,23 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [activityLevel, setactivityLevel] = useState("");
   const [goalWeight, setgoalWeight] = useState("");
 
+  // Diet
+  const [activeDietSelection, setactiveDietSelection] = useState("");
+  const [likedFoods, setlikedFoods] = useState([]);
+  const [dislikedFoods, setdislikedFoods] = useState([]);
+
   const [error, seterror] = useState(null);
   const [signupStage, setsignupStage] = useState("diet");
   const [passwordInputError, setpasswordInputError] = useState(false);
 
-  const ipAddress = "192.168.1.201";
+  const ipAddress = "192.168.1.166";
   const [caloriesGoal, setcaloriesGoal] = useState("");
   const [proteinGoal, setproteinGoal] = useState("");
   const [fatGoal, setfatGoal] = useState("");
   const [carbohydrateGoal, setcarbohydrateGoal] = useState("");
+
+  const [foodSearchQuery, setfoodSearchQuery] = useState("");
+  const [searchResult, setsearchResult] = useState([]);
 
   //   Ranges
   const [ageRange, setageRange] = useState<number[]>([]);
@@ -57,13 +69,23 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     "Active",
     "Very Active",
   ]);
+
   useEffect(() => {
+    // console.log((Dimensions.get('screen').height / 2) * 100)
     const arrayFrom1To100 = Array.from(
       { length: 100 },
       (_, index) => index + 1
     );
 
     setageRange(arrayFrom1To100);
+  }, []);
+
+  useEffect(() => {
+    const fetchToken = async () => {
+      const token = await getUsersAccessToken();
+      setaccessToken(token);
+    };
+    fetchToken();
   }, []);
 
   useEffect(() => {
@@ -265,7 +287,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setage(itemValue);
                     }}
-                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {ageRange.map((range) => (
                       <Picker.Item
@@ -286,7 +308,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setgender(itemValue);
                     }}
-                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {genderRange.map((range) => (
                       <Picker.Item
@@ -320,7 +342,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                     onValueChange={(itemValue, itemIndex) => {
                       setheight(itemValue);
                     }}
-                  // style={{backgroundColor: '#ececec', borderRadius: 30}}
+                    // style={{backgroundColor: '#ececec', borderRadius: 30}}
                   >
                     {heightData.map((heightInfo) => (
                       <Picker.Item
@@ -425,17 +447,86 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
               Dietary Preferences
             </Text>
 
-            <Text className="text-lg mt-5">Favorite Food</Text>
-            <TouchableOpacity className="mt-2 flex-row items-center">
-              <Text>Add</Text>
-              <Icon color={theme.accentColor} name="add" />
-            </TouchableOpacity>
+            <Text className="text-lg mt-5 mb-2">Favorite Food</Text>
+            <View className="flex-row gap-x-3 mt-3 flex-wrap gap-y-2">
+              {likedFoods.length > 0 &&
+                likedFoods.map((likedfood, index) => (
+                  <TouchableOpacity
+                  key={index}
+                    onPress={() => setlikedFoods(likedFoods.filter((likedfoodFromArray) => likedfoodFromArray !== likedfood))}
+                    className=" justify-center items-center rounded-2xl"
+                    style={{
+                      minWidth: "20%",
+                      // minHeight: '20%',
+                      height: 30,
+                      backgroundColor: theme.accentColor,
+                    }}
+                  >
+                    <Text style={{ color: "white" }} className=" px-3 text-center font-bold">
+                      {likedfood}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
 
-            <Text className="text-lg mt-5">Disliked Food Food</Text>
-            <TouchableOpacity className="mt-2 flex-row items-center">
-              <Text>Add</Text>
-              <Icon color={theme.accentColor} name="add" />
-            </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => {
+                  setfoodSearchQuery("");
+                  setsearchResult([]);
+                  setactiveDietSelection("favorite");
+                  refRBSheet?.current?.open();
+                }}
+                className="flex-row justify-center items-center rounded-2xl"
+                    style={{
+                      width: "20%",
+                      height: 30,
+                      backgroundColor: theme.background,
+                    }}
+              >
+                <Text style={{color: theme.accentColor}} className="text-white font-bold">Add</Text>
+                <Icon color={theme.accentColor} name="add" />
+              </TouchableOpacity>
+            </View>
+
+            <Text className="text-lg mt-5 mb-2">Disliked Food Food</Text>
+            <View className="flex-row gap-x-3 mt-3 flex-wrap gap-y-2">
+              {dislikedFoods.length > 0 &&
+                dislikedFoods.map((dislikedfoods, index) => (
+                  <TouchableOpacity
+                  onPress={() => setdislikedFoods(dislikedFoods.filter((dislikedfoodFromArray) => dislikedfoodFromArray !== dislikedfoods))}
+
+                    className=" justify-center items-center rounded-2xl"
+                    style={{
+                      minWidth: "20%",
+                      // minHeight: '20%',
+                      height: 30,
+                      backgroundColor: theme.accentColor,
+                    }}
+                    key={index}
+                  >
+                    <Text style={{ color: "white" }} className="px-3 text-center font-bold">
+                      {dislikedfoods}
+                    </Text>
+                  </TouchableOpacity>
+                ))}
+
+              <TouchableOpacity
+                onPress={() => {
+                  setfoodSearchQuery("");
+                  setsearchResult([]);
+                  setactiveDietSelection("dislike");
+                  refRBSheet?.current?.open();
+                }}
+                className="flex-row justify-center items-center rounded-2xl"
+                    style={{
+                      width: "20%",
+                      height: 30,
+                      backgroundColor: theme.background,
+                    }}
+              >
+                <Text style={{color: theme.accentColor}} className="text-white font-bold">Add</Text>
+                <Icon color={theme.accentColor} name="add" />
+              </TouchableOpacity>
+            </View>
           </>
         )}
 
@@ -534,6 +625,96 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
+
+      <RBSheet
+        ref={refRBSheet}
+        closeOnDragDown={true}
+        closeOnPressMask={true}
+        height={Dimensions.get("screen").height / 1.5}
+        customStyles={{
+          wrapper: {
+            backgroundColor: "transparent",
+            // height: 500
+          },
+          draggableIcon: {
+            backgroundColor: "#000",
+          },
+        }}
+      >
+        <View
+          className="flex-row justify-between items-center mt-5 mx-5 py-5 px-5 rounded-3xl"
+          style={{ backgroundColor: theme.background2 }}
+        >
+          <Icon color={theme.text} name="search" type="evilicons" />
+
+          <TextInput
+            // ref={inputRef}
+            onChangeText={(txt) => {
+              suggestText(txt, setsearchResult, accessToken);
+            }}
+            // value={foodSearchQuery}
+            returnKeyType="search"
+            placeholderTextColor={theme.text}
+            className=" px-5 border-gray-50 rounded-lg"
+            placeholder="Search Food..."
+            style={{ width: "80%", color: theme.text }}
+            autoFocus={true}
+          />
+          <TouchableOpacity onPress={() => alert("Feature in development")}>
+            <Icon
+              color={theme.text}
+              name="barcode-scan"
+              type="material-community"
+            />
+          </TouchableOpacity>
+        </View>
+
+        <View className="mt-3">
+          {searchResult?.length > 0 &&
+            searchResult.map((result, index) => (
+              <View className="mx-5" key={index}>
+                <TouchableOpacity
+                  className=" flex-row gap-x-5 items-center mt-5 rounded-3xl"
+                  onPress={() => {
+                    if (activeDietSelection == "favorite") {
+                      setlikedFoods((prevsData) => [...prevsData, result]);
+                    } else {
+                      setdislikedFoods((prevsData) => [...prevsData, result]);
+                    }
+                    refRBSheet?.current?.close();
+                  }}
+                >
+                  <View
+                    style={{
+                      backgroundColor: theme.lighterBackground,
+                      width: 30,
+                      height: 30,
+                    }}
+                    className="p-2 rounded-full justify-center items-center "
+                  >
+                    <Icon
+                      size={16}
+                      name="search"
+                      type="evilicons"
+                      color={"#ccc"}
+                    />
+                  </View>
+
+                  <Text style={{ color: theme.text }}>{result}</Text>
+                </TouchableOpacity>
+              </View>
+            ))}
+
+          {searchResult?.length == 0 && (
+            <Text
+              style={{ color: theme.accentColor }}
+              className="mx-5 font-bold"
+            >
+              Start Searching...
+            </Text>
+          )}
+        </View>
+      </RBSheet>
     </SafeAreaView>
   );
 };

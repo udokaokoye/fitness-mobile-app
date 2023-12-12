@@ -180,6 +180,7 @@ try {
   })
     .then((res) => res.json())
     .then((data) => {
+      // console.log(data)
       setsuggestions(data.suggestions?.suggestion);
     });
 } catch (error) {
