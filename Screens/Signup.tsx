@@ -25,11 +25,11 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const authContext = useContext(AuthContext);
   const [accessToken, setaccessToken] = useState("");
   // Basic Info
-  const [email, setemail] = useState("leviokoye@gmail.com1");
-  const [firstName, setfirstName] = useState("sdfsd");
-  const [lastName, setlastName] = useState("fsdfs");
-  const [password, setpassword] = useState("advantage@0907756");
-  const [passwordConfirm, setpasswordConfirm] = useState("advantage@0907756");
+  const [email, setemail] = useState("");
+  const [firstName, setfirstName] = useState("");
+  const [lastName, setlastName] = useState("");
+  const [password, setpassword] = useState("");
+  const [passwordConfirm, setpasswordConfirm] = useState("");
 
   const refRBSheet = useRef<any>();
 
