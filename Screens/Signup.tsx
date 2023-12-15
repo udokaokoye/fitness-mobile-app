@@ -17,6 +17,7 @@ import { Picker } from "@react-native-picker/picker";
 import { getUsersAccessToken, heightData, suggestText } from "../utils/lib";
 import { Icon } from "@rneui/base";
 import RBSheet from "react-native-raw-bottom-sheet";
+import { set } from "lodash";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -36,7 +37,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [age, setage] = useState(null);
   const [gender, setgender] = useState(null);
   const [height, setheight] = useState(null);
-  const [weight, setweight] = useState<string | null>(null);
+  const [weight, setweight] = useState(null);
 
   //   Activity / Goals
   const [activityLevel, setactivityLevel] = useState("");
@@ -47,11 +48,11 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [likedFoods, setlikedFoods] = useState([]);
   const [dislikedFoods, setdislikedFoods] = useState([]);
 
-  const [error, seterror] = useState(null);
-  const [signupStage, setsignupStage] = useState("diet");
+  const [error, seterror] = useState<string | null>(null);
+  const [signupStage, setsignupStage] = useState("basic-info");
   const [passwordInputError, setpasswordInputError] = useState(false);
 
-  const ipAddress = "192.168.1.166";
+  const ipAddress = "192.168.1.234";
   const [caloriesGoal, setcaloriesGoal] = useState("");
   const [proteinGoal, setproteinGoal] = useState("");
   const [fatGoal, setfatGoal] = useState("");
@@ -62,7 +63,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
 
   //   Ranges
   const [ageRange, setageRange] = useState<number[]>([]);
-  const [genderRange, setgenderRange] = useState(["Male", "Female", "Other"]);
+  const [genderRange, setgenderRange] = useState(["", "Male", "Female", "Other"]);
   const [activityLevelRange, setactivityLevelRange] = useState([
     "Sedentary",
     "Lightly Active",
@@ -140,28 +141,59 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
         alert("Please enter firstname, lastname and email address.");
         return;
       }
-      setsignupStage("password");
+
+      // check if email already exists
+      fetch(`http://${ipAddress}/fitness-backend/api/auth/signup.php?email=${email}&action=checkEmail`).then((res) => res.json()).then((data) => {
+        if (data.status == 200) {
+          seterror(data.message)
+          return
+        }
+        seterror(null)
+        setsignupStage("password");
+      })
     } else if (signupStage == "password") {
       if (password == "" || !validatePasswordInput) {
-        alert("Please enter a valid password");
+        seterror("Please enter a valid password");
         return;
       }
 
       if (password !== passwordConfirm) {
         console.log(password);
         console.log(passwordConfirm);
-        alert("password does not match");
+        seterror("password does not match");
         return;
       }
-      setsignupStage("profile");
+      seterror(null)
+      setsignupStage("profile-1");
     } else if (signupStage == "profile-1") {
+      if (!age || !gender) {
+        seterror('Please Select Age and Gender')
+        return
+      }
+      seterror(null)
       setsignupStage("profile-2");
+    } else if (signupStage == "profile-2") {
+      if (!height || !weight) {
+        seterror('Please Select Height and Weight')
+        return
+      }
+      seterror(null)
+      setsignupStage("activity-goal");
+    } else if (signupStage == "activity-goal") {
+      if (!activityLevel || !goalWeight || !caloriesGoal) {
+        seterror('Please Select Activity Level and Goal Weight')
+        return
+      }
+      seterror(null)
+      setsignupStage("diet");
+    } else if (signupStage == "diet") {
+      setsignupStage("avatar");
     } else if (signupStage == "avatar") {
-      setsignupStage("goals");
-    } else if (signupStage == "goals") {
-      completeSignup();
+      completeSignup()
     }
   };
+
+
 
   const completeSignup = async () => {
     const formData = new FormData();
@@ -169,9 +201,18 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     formData.append("lastName", lastName);
     formData.append("email", email);
     formData.append("password", passwordConfirm);
-    formData.append("caloriesGoal", caloriesGoal);
-    formData.append("createdAt", "123456");
+    formData.append('weight', 'weight');
+    formData.append('height', 'height');
+    formData.append('age', 'age');
+    formData.append('gender', 'gender')
+    formData.append("activityLevel", activityLevel);
+    formData.append("goalWeight", goalWeight);
+    formData.append("likedFoods", JSON.stringify(likedFoods));
+    formData.append("dislikedFoods", JSON.stringify(dislikedFoods));
 
+    formData.append("dailyCalories", caloriesGoal);
+    formData.append("createdAt", moment().unix().toString());
+    
     try {
       const response = await fetch(
         `http://${ipAddress}/fitness-backend/api/auth/signup.php`,
@@ -541,7 +582,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
           </>
         )}
 
-        {signupStage == "goals" && (
+        {/* {signupStage == "goals" && (
           <>
             <Text className="text-center mb-3 font-bold">
               Enter you nutrition goals
@@ -598,7 +639,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
               </Text>
             </View>
           </>
-        )}
+        )} */}
 
         <TouchableOpacity
           onPress={() => proceedToNextStage()}
@@ -609,7 +650,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
             height: 60,
           }}
         >
-          <Text className="text-lg text-white font-bold">Continue</Text>
+          <Text className="text-lg text-white font-bold">{signupStage == 'avatar' ? 'Complete!' : 'Continue'}</Text>
         </TouchableOpacity>
 
         <View
