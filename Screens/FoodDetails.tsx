@@ -43,6 +43,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
   const dispatch = useDispatch();
+  const ipAddress = "172.20.10.5"
 
   const user  = useContext(AuthContext)?.user
   useEffect(() => {
@@ -101,7 +102,6 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
 
   const servingRange = ["1", "2", "3", "4", "5", "6", "7", "8", "9", "10"];
 
-  const generateNewFoodInfoBasedOnServing = () => {};
 
   const logMealHandler = async () => {
     // console.log(parseInt(food?.servings.serving[0].calories || "0"));
@@ -188,7 +188,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
     // formData.append('nutrition', JSON.stringify(nutrition))
 
 
-    const response = await fetch("http://192.168.1.167/fitness-backend/api/food/index.php", {
+    const response = await fetch(`http://${ipAddress}/fitness-backend/api/food/index.php`, {
       method: "POST",
       body: JSON.stringify({
         food: foodObject,

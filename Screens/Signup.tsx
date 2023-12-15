@@ -37,7 +37,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [age, setage] = useState(null);
   const [gender, setgender] = useState(null);
   const [height, setheight] = useState(null);
-  const [weight, setweight] = useState(null);
+  const [weight, setweight] = useState<string | null>(null);
 
   //   Activity / Goals
   const [activityLevel, setactivityLevel] = useState("");
@@ -52,7 +52,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [signupStage, setsignupStage] = useState("basic-info");
   const [passwordInputError, setpasswordInputError] = useState(false);
 
-  const ipAddress = "192.168.1.234";
+  const ipAddress = "172.20.10.5";
   const [caloriesGoal, setcaloriesGoal] = useState("");
   const [proteinGoal, setproteinGoal] = useState("");
   const [fatGoal, setfatGoal] = useState("");
@@ -201,14 +201,14 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     formData.append("lastName", lastName);
     formData.append("email", email);
     formData.append("password", passwordConfirm);
-    formData.append('weight', 'weight');
-    formData.append('height', 'height');
-    formData.append('age', 'age');
-    formData.append('gender', 'gender')
+    formData.append('weight', weight ? weight : '');
+    formData.append('height', height ? height : '');
+    formData.append('age', age ? age : '');
+    formData.append('gender', gender ? gender : '')
     formData.append("activityLevel", activityLevel);
     formData.append("goalWeight", goalWeight);
-    formData.append("likedFoods", JSON.stringify(likedFoods));
-    formData.append("dislikedFoods", JSON.stringify(dislikedFoods));
+    formData.append("favoriteFoods", likedFoods.join());
+    formData.append("dislikedFoods", dislikedFoods.join());
 
     formData.append("dailyCalories", caloriesGoal);
     formData.append("createdAt", moment().unix().toString());

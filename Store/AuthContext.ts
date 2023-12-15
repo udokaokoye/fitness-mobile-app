@@ -8,13 +8,22 @@ export type AuthContextType = {
   };
 
 type UserInfoProps = {
+  id: string;
   firstName: string;
   lastName: string;
   email: string;
-  password: string;
   avatar: string;
-  id: string;
-  caloriesGoal: number;
+  age: number;
+  gender: string;
+  weight: number;
+  height: number;
+  daily_calories: number;
+  activity_level: string;
+  goal_weight: number;
+  dietary_preferences: string;
+  favorite_foods: string;
+  disliked_foods: string;
+  
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

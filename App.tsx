@@ -21,6 +21,7 @@ import { logMeal } from "./redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "./redux/reducers/mealsSlice";
 import { UserMealsProp } from "./utils/types";
 import moment from "moment";
+import Profile from "./Screens/Profile";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -109,8 +110,8 @@ export default function App() {
                     }}
                   />
                   <Tab.Screen
-                    name="Me"
-                    component={Discover}
+                    name="proflile"
+                    component={Profile}
                     options={{
                       headerShown: false,
                       tabBarLabel: () => (

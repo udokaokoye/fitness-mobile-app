@@ -29,7 +29,7 @@ import { MealsHistoryContext } from "../Store/MealsHistoryContext";
 import { logMeal, logMealFromBackend } from "../redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice";
 const Home = ({ navigation }: any) => {
-  const ipAddress = "192.168.1.167";
+  const ipAddress = "172.20.10.5";
   const user = useContext(AuthContext)?.user;
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const [refetchMealHistory, setrefetchMealHistory] = useState(0);

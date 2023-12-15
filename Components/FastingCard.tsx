@@ -80,6 +80,8 @@ function calculateTimePercentage(currentTime:any, endTime:any) {
           progressValueTextSize={50}
           fastingTime={currentFastTime}
           strokeSize={40}
+          progressValue={timeCompletedInPercentage}
+          theme={theme}
         />
 
         <TouchableOpacity onPress={toggleInterval} style={{backgroundColor: theme.accentColor}} className="rounded-3xl w-60 h-12 mb-10 justify-center items-center" >

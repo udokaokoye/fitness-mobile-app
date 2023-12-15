@@ -36,10 +36,10 @@ const CaloriesDisplayCard: React.FC<CommonThemeProp & ComponentProps> = ({
             style={{ width: "100%", height: "100%" }}>
             <ProgressCircle
               progressValue={currentCaloriesConsumption}
-              progressTitle={`Goal: ${user?.caloriesGoal} Kcal`}
+              progressTitle={`Goal: ${user?.daily_calories} Kcal`}
               strokeSize={10}
               size={600}
-              percentageUsed={calculateSliderPercentage(currentCaloriesConsumption, user?.caloriesGoal || 0)}
+              percentageUsed={calculateSliderPercentage(currentCaloriesConsumption, user?.daily_calories || 0)}
               color={theme.accentColor}
               progressValueTextSize={40}
               progressTitleTextSize={16}
