@@ -5,9 +5,10 @@ export type AuthContextType = {
     isLoggedIn: boolean; // Define your Theme type
     setisLoggedIn: React.Dispatch<React.SetStateAction<boolean>>;
     user: UserInfoProps | null;
+    setuser: React.Dispatch<React.SetStateAction<UserInfoProps | null>>;
   };
 
-type UserInfoProps = {
+export type UserInfoProps = {
   id: string;
   firstName: string;
   lastName: string;
@@ -23,7 +24,7 @@ type UserInfoProps = {
   dietary_preferences: string;
   favorite_foods: string;
   disliked_foods: string;
-  
+  [key: string]: any; 
 }
 
 export const AuthContext = createContext<AuthContextType | null>(null);

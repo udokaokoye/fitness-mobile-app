@@ -25,6 +25,7 @@ import {
   logLunch,
 } from "../redux/reducers/mealsSlice";
 import { AuthContext } from "../Store/AuthContext";
+import { API_URL } from "@env";
 interface ComponentProps {
   route?: any;
 }
@@ -43,7 +44,6 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
   const dispatch = useDispatch();
-  const ipAddress = "172.20.10.5"
 
   const user  = useContext(AuthContext)?.user
   useEffect(() => {
@@ -188,7 +188,7 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
     // formData.append('nutrition', JSON.stringify(nutrition))
 
 
-    const response = await fetch(`http://${ipAddress}/fitness-backend/api/food/index.php`, {
+    const response = await fetch(`http://${API_URL}/fitness-backend/api/food/index.php`, {
       method: "POST",
       body: JSON.stringify({
         food: foodObject,

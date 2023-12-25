@@ -18,6 +18,7 @@ import { getUsersAccessToken, heightData, suggestText } from "../utils/lib";
 import { Icon } from "@rneui/base";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { set } from "lodash";
+import { API_URL } from "@env";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -52,7 +53,6 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const [signupStage, setsignupStage] = useState("basic-info");
   const [passwordInputError, setpasswordInputError] = useState(false);
 
-  const ipAddress = "172.20.10.5";
   const [caloriesGoal, setcaloriesGoal] = useState("");
   const [proteinGoal, setproteinGoal] = useState("");
   const [fatGoal, setfatGoal] = useState("");
@@ -143,7 +143,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
       }
 
       // check if email already exists
-      fetch(`http://${ipAddress}/fitness-backend/api/auth/signup.php?email=${email}&action=checkEmail`).then((res) => res.json()).then((data) => {
+      fetch(`http://${API_URL}/fitness-backend/api/auth/signup.php?email=${email}&action=checkEmail`).then((res) => res.json()).then((data) => {
         if (data.status == 200) {
           seterror(data.message)
           return
@@ -166,7 +166,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
       seterror(null)
       setsignupStage("profile-1");
     } else if (signupStage == "profile-1") {
-      if (!age || !gender) {
+      if (!age || !gender || gender == "") {
         seterror('Please Select Age and Gender')
         return
       }
@@ -215,7 +215,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     
     try {
       const response = await fetch(
-        `http://${ipAddress}/fitness-backend/api/auth/signup.php`,
+        `http://${API_URL}/fitness-backend/api/auth/signup.php`,
         {
           method: "POST",
           body: formData,
@@ -228,6 +228,8 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
         seterror(data.message);
         return;
       } else {
+        // !we need to update the user context here
+        authContext?.setuser(data.data);
         await AsyncStorage.setItem("user", JSON.stringify(data.data));
         authContext?.setisLoggedIn(true);
       }
@@ -390,7 +392,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                         color={theme.text}
                         key={heightInfo.CM}
                         label={`${heightInfo.Foot} ( ${heightInfo.CM}CM)`}
-                        value={heightInfo.Foot}
+                        value={heightInfo.CM}
                       />
                     ))}
                   </Picker>
@@ -666,7 +668,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
           </TouchableOpacity>
         </View>
       </View>
-
+          {/* @ts-ignore */}
       <RBSheet
         ref={refRBSheet}
         closeOnDragDown={true}

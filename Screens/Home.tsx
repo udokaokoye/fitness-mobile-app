@@ -28,8 +28,8 @@ import moment from "moment";
 import { MealsHistoryContext } from "../Store/MealsHistoryContext";
 import { logMeal, logMealFromBackend } from "../redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice";
+import {API_URL} from "@env"
 const Home = ({ navigation }: any) => {
-  const ipAddress = "172.20.10.5";
   const user = useContext(AuthContext)?.user;
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const [refetchMealHistory, setrefetchMealHistory] = useState(0);
@@ -42,6 +42,7 @@ const Home = ({ navigation }: any) => {
   const setmealHistory = mealsHistoryContext?.setmealHistory
   const mealHistory = mealsHistoryContext?.mealHistory;
   useEffect(() => {
+    // console.log(API_URL)
     // alert("hello")
     fetchMealHistory()
   }, [])
@@ -51,7 +52,7 @@ const Home = ({ navigation }: any) => {
     // console.log(moment().endOf('day').unix())
     // console.log(user?.id)
     // return;
-    const response = await fetch(`http://${ipAddress}/fitness-backend/api/food/index.php?userId=${user?.id}&beginningOfDay=${moment().startOf('day').unix()}&endOfDay=${moment().endOf('day').unix()}`)
+    const response = await fetch(`http://${API_URL}/fitness-backend/api/food/index.php?userId=${user?.id}&beginningOfDay=${moment().startOf('day').unix()}&endOfDay=${moment().endOf('day').unix()}`)
     const data = await response.json()
 
     setmealHistory(data.message)

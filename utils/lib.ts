@@ -75,6 +75,9 @@ export async function logUserOut() {
   await AsyncStorage.removeItem('user')
 }
 
+export async function updateUserAsyncStorage(user: any) {
+  await AsyncStorage.setItem('user', JSON.stringify(user))
+}
 
 export async function getUsersAccessToken(): Promise<string> {
   const tokenObject = await AsyncStorage.getItem("accessToken");

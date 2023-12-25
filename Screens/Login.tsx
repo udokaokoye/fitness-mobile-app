@@ -5,6 +5,7 @@ import { blackTheme } from '../Store/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProps } from '../utils/commonProps';
 import { AuthContext } from '../Store/AuthContext';
+import { API_URL } from '@env';
 
 const Login: React.FC<NavigationProps> = ({navigation}) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -14,7 +15,6 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
   const [error, seterror] = useState(null);
   const authContext = useContext(AuthContext)
 
-  const ipAddress = "192.168.1.166";
   const loginHandler = async () => {
     const formData = new FormData()
 
@@ -26,7 +26,7 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
     formData.append('email', email)
     formData.append('password', password);
     try {
-      const res = await fetch(`http://${ipAddress}/fitness-backend/api/auth/login.php`, {
+      const res = await fetch(`http://${API_URL}/fitness-backend/api/auth/login.php`, {
       method: 'POST',
       body: formData
     })

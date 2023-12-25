@@ -1,4 +1,5 @@
 import { StyleSheet, Text, View } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 import { NavigationContainer } from "@react-navigation/native";
 import { createNativeStackNavigator } from "@react-navigation/native-stack";
 import { createBottomTabNavigator } from "@react-navigation/bottom-tabs";
@@ -13,7 +14,7 @@ import SearchFood from "./Screens/SearchFood";
 import HomeStack from "./Stacks/HomeStack";
 import { Provider } from "react-redux";
 import store from "./redux/store";
-import { AuthContext } from "./Store/AuthContext";
+import { AuthContext, UserInfoProps } from "./Store/AuthContext";
 import { isUserLoggedIn } from "./utils/lib";
 import AuthStack from "./Stacks/AuthStack";
 import { MealHistoryProps, MealsHistoryContext } from "./Store/MealsHistoryContext";
@@ -22,6 +23,7 @@ import { logBreakfast, logDinner, logLunch } from "./redux/reducers/mealsSlice";
 import { UserMealsProp } from "./utils/types";
 import moment from "moment";
 import Profile from "./Screens/Profile";
+import ProfileStack from "./Stacks/ProfileStack";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -30,11 +32,20 @@ export default function App() {
   const [theme, setTheme] = useState(lightTheme);
   const [loading, setloading] = useState(false)
   const [isLoggedIn, setisLoggedIn] = useState(false)
-  const [user, setuser] = useState(null)
+  const [user, setuser] = useState<UserInfoProps | null>(null)
   const [mealHistory, setmealHistory] = useState(null)
   // const user = useContext(AuthContext)?.user;
 
   useEffect(() => {
+    async function getUserTheme () {
+      const theme = await AsyncStorage.getItem('theme')
+      console.log(theme)
+      if (theme) {
+        setTheme(JSON.parse(theme))
+      } else {
+        setTheme(lightTheme)
+      }
+    }
     setloading(true)
     async function validateUser() {
       const userLoggedIn = await isUserLoggedIn();
@@ -47,16 +58,18 @@ export default function App() {
         setisLoggedIn(false)
       }
     }
-
+    getUserTheme()
     validateUser()
   }, [])
+
+  
 
 
 
   return (
     <Provider store={store}>
       <ThemeContext.Provider value={{ theme, setTheme }}>
-        <AuthContext.Provider value={{ isLoggedIn, setisLoggedIn, user }}>
+        <AuthContext.Provider value={{ isLoggedIn, setisLoggedIn, user, setuser }}>
           <MealsHistoryContext.Provider value={{mealHistory, setmealHistory}}>
 
             {/* <Text>Hello</Text> */}
@@ -110,8 +123,8 @@ export default function App() {
                     }}
                   />
                   <Tab.Screen
-                    name="proflile"
-                    component={Profile}
+                    name="profileTab"
+                    component={ProfileStack}
                     options={{
                       headerShown: false,
                       tabBarLabel: () => (

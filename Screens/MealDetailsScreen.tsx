@@ -88,7 +88,7 @@ const calories = mealHistory.reduce((accumulator, mealObject:any) => {
   }, []);
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: theme.background, flex: 1}}>
       <View className="flex-row items-center justify-between mx-5 pb-3 mt-3">
         <Icon
           name="back"
@@ -118,7 +118,7 @@ const calories = mealHistory.reduce((accumulator, mealObject:any) => {
           style={{ backgroundColor: theme.background2 }}
           className="mt-3 rounded-lg p-3"
         >
-          <Text className="text-xl text-center">
+          <Text style={{color: theme.text}} className="text-xl text-center">
             {meal} Summary -{" "}
             <Text className="font-bold" style={{ color: theme.accentColor }}>
               12/22/23
@@ -130,27 +130,27 @@ const calories = mealHistory.reduce((accumulator, mealObject:any) => {
               <Text className=" font-bold text-xl text-center text-pink-600">
                 {caloriesTotal} Kcal
               </Text>
-              <Text className="text-center">Calories Total</Text>
+              <Text style={{color: theme.text}} className="text-center">Calories Total</Text>
             </View>
             <View>
               <Text className=" text-xl text-center text-orange-500 font-bold">
                 {fatTotoal} g
               </Text>
-              <Text className="text-center">Fat</Text>
+              <Text style={{color: theme.text}} className="text-center">Fat</Text>
             </View>
 
             <View>
               <Text className=" text-xl text-center text-purple-600 font-bold">
                 {proteinTotal} g
               </Text>
-              <Text className="text-center">Protein</Text>
+              <Text style={{color: theme.text}} className="text-center">Protein</Text>
             </View>
 
             <View>
               <Text className=" text-xl text-center text-green-500 font-bold">
                 {carbsTotal} g
               </Text>
-              <Text className="text-center">Carbs</Text>
+              <Text style={{color: theme.text}} className="text-center">Carbs</Text>
             </View>
           </View>
         </View>
@@ -172,7 +172,7 @@ const calories = mealHistory.reduce((accumulator, mealObject:any) => {
           </View>
         )}
 
-        <Text className="mt-5 text-xl">Food Consumed</Text>
+        <Text style={{color: theme.text}} className="mt-5 text-xl">Food Consumed</Text>
 
         {mealHistory?.map((foodHistory: MealHistoryProps) => (
           <TouchableOpacity
