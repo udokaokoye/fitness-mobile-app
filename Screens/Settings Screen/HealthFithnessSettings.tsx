@@ -2,7 +2,7 @@ import { View, Text, ScrollView, TouchableOpacity, Dimensions, TextInput } from 
 import React, { useContext, useRef, useState, useEffect } from 'react'
 import { SafeAreaView } from 'react-native-safe-area-context'
 import { Button, Icon } from '@rneui/base'
-import { CommonThemeProp } from '../../utils/commonProps'
+import { CommonThemeProp, NavigationProps } from '../../utils/commonProps'
 import { Theme, blackTheme } from '../../Store/themes'
 import { ThemeContext, ThemeContextType } from '../../Store/ThemeContext'
 import RBSheet from 'react-native-raw-bottom-sheet'
@@ -13,8 +13,9 @@ import { API_URL } from '@env'
 import { set } from 'lodash'
 import { auth } from '../../firebase'
 import { parse } from 'react-native-redash'
+import moment from 'moment'
 
-const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
+const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({navigation}) => {
 
 
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -59,14 +60,16 @@ const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
         break;
     }
     const formData = new FormData()
-    formData.append('id', user?.id.toString() || '')
+    formData.append('id', user?.id?.toString() || '')
     formData.append('field', fieldToUpdate)
     if (fieldToUpdate == 'height') {
-      formData.append('value', newHeight ? newHeight.toString() : '')
+      formData.append('value', newHeight ? newHeight?.toString() : '')
     } else {
       formData.append('value', valueToUpdate ? valueToUpdate : '')
     }
-    formData.append('id', user?.id.toString() || '')
+    formData.append('id', user?.id?.toString() || '')
+    formData.append('updatedAt', moment().unix().toString())
+
 
     try {
       const res = await fetch(`http://${API_URL}/fitness-backend/api/user/updateSingle.php`, {
@@ -98,17 +101,17 @@ const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
   }
 
   return (
-    <SafeAreaView>
+    <SafeAreaView className='flex-1'>
       <View style={{ height: 30, position: 'relative' }} className=' mx-8 flex-row justify-center items-center'>
 
-        <TouchableOpacity>
+        <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon color={theme?.text} name='arrow-back-ios' />
         </TouchableOpacity>
 
         <Text style={{ width: '100%' }} className='text-lg font-bold text-center'>Health & Fitness</Text>
 
       </View>
-      <ScrollView>
+      <ScrollView className='flex-1'>
 
         <View className='mx-5 mt-5'>
           <HealthFitnessMenu onClick={() => {
@@ -119,7 +122,7 @@ const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
 
           }} theme={theme}
             title='height'
-            value={heightData.filter((hData) => parseInt(hData.CM) == user?.height)[0].Foot}
+            value={heightData.filter((hData) => parseInt(hData.CM) == user?.height)[0]?.Foot}
           />
 
           <HealthFitnessMenu onClick={() => {
@@ -196,7 +199,7 @@ const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
                   <Picker.Item
                     color={theme.text}
                     key={heightInfo.CM}
-                    label={`${heightInfo.Foot} ( ${heightInfo.CM}CM)`}
+                    label={`${heightInfo?.Foot} ( ${heightInfo.CM}CM)`}
                     value={heightInfo.CM}
                   />
                 ))}
@@ -205,10 +208,10 @@ const HealthFithnessSettings: React.FC<CommonThemeProp> = () => {
                 Height (FT/CM)
               </Text>
             </View>) : (
-            <View style={{ width: '90%' }} className='flex-row self-center items-center justify-between mb-5 '>
+            <View style={{ width: '100%' }} className='flex-row self-center items-center justify-between mb-5 '>
               <TextInput onChangeText={(txt) => setvalueToUpdate(txt)} value={valueToUpdate ? valueToUpdate : ''} placeholderTextColor={theme.text} placeholder='Enter Height' style={{ width: '89%', height: 50, backgroundColor: theme.background2 }} className=' rounded-xl px-5' />
               <View style={{ backgroundColor: theme.background2, width: '10%' }} className=' rounded-full'>
-                <Text className='text-center'>lb</Text>
+                {/* <Text className='text-center'>lb</Text> */}
               </View>
             </View>
           )}

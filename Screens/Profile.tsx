@@ -94,7 +94,7 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
                     </View>
                     <Text style={{color: theme?.text}} className='text-3xl text-center mt-5'>{user?.firstName} {user?.lastName}</Text>
                     <Text style={{color: theme?.text}} className='text-center mt-2'>@leviokoye</Text>
-                    <TouchableOpacity className='border border-gray-400 rounded-xl px-5 py-2 mt-5 mx-auto' style={{ width: 200, height: 50 }}>
+                    <TouchableOpacity onPress={() => navigation.navigate('editProfile')} className='border border-gray-400 rounded-xl px-5 py-2 mt-5 mx-auto' style={{ width: 200, height: 50 }}>
                         <Text style={{color: theme?.accentColor}} className='m-auto font-bold '>Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
