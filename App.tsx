@@ -24,6 +24,7 @@ import { UserMealsProp } from "./utils/types";
 import moment from "moment";
 import Profile from "./Screens/Profile";
 import ProfileStack from "./Stacks/ProfileStack";
+import { FastingContext } from "./Store/FastingContext";
 const Stack = createNativeStackNavigator();
 
 export default function App() {
@@ -34,6 +35,11 @@ export default function App() {
   const [isLoggedIn, setisLoggedIn] = useState(false)
   const [user, setuser] = useState<UserInfoProps | null>(null)
   const [mealHistory, setmealHistory] = useState(null)
+  const [fastingInfo, setfastingInfo] = useState({
+    startTime: null,
+    endTime: null,
+  })
+  const [isFasting, setisFasting] = useState(false)
   // const user = useContext(AuthContext)?.user;
 
   useEffect(() => {
@@ -71,6 +77,7 @@ export default function App() {
       <ThemeContext.Provider value={{ theme, setTheme }}>
         <AuthContext.Provider value={{ isLoggedIn, setisLoggedIn, user, setuser }}>
           <MealsHistoryContext.Provider value={{mealHistory, setmealHistory}}>
+            <FastingContext.Provider value={{fastingInfo, setfastingInfo, isFasting, setisFasting}}>
 
             {/* <Text>Hello</Text> */}
             <NavigationContainer>
@@ -138,6 +145,7 @@ export default function App() {
                 </Tab.Navigator>
               ) : (<AuthStack />)}
             </NavigationContainer>
+            </FastingContext.Provider>
           </MealsHistoryContext.Provider>
 
         </AuthContext.Provider>

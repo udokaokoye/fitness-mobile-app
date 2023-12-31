@@ -3,11 +3,12 @@ import React, { useEffect, useState } from "react";
 import { CommonThemeProp } from "../utils/commonProps";
 import ProgressCircle from "./ProgressCircle";
 import  moment from 'moment'
+import FastingCircle from "./FastingCircle";
 
 const FastingCard: React.FC<CommonThemeProp> = ({ theme }) => {
   const [currentFastTime, setcurrentFastTime] = useState<string>("00:00:00")
   const [intervalId, setintervalId] = useState(null)
-  const [isFasting, setisFasting] = useState(true)
+  const [isFasting, setisFasting] = useState(false)
   const [timeCompletedInPercentage, settimeCompletedInPercentage] = useState(0)
 // useEffect(() => {
 //     console.log()
@@ -67,13 +68,15 @@ function calculateTimePercentage(currentTime:any, endTime:any) {
 }
   return (
     <View
-      className="mt-10 rounded-3xl"
-      style={{ backgroundColor: theme.background2, minHeight: 400 }}
+      className="mt-10 rounded-full"
+      style={{ backgroundColor: 'transparent', height: 400, width: 400 }}
     >
       <View className=" justify-center items-center">
-        <ProgressCircle
+
+        {/* <View style={{width: 1000 / 3, height: 1000/3}} className="bg-green-500 rounded-full relative"> */}
+        <FastingCircle
           percentageUsed={timeCompletedInPercentage}
-          color="red"
+          color={theme.accentColor}
           size={1000}
           progressTitle="Time Since Last Fast"
           progressTitleTextSize={15}
@@ -83,10 +86,9 @@ function calculateTimePercentage(currentTime:any, endTime:any) {
           progressValue={timeCompletedInPercentage}
           theme={theme}
         />
+        {/* </View> */}
 
-        <TouchableOpacity onPress={toggleInterval} style={{backgroundColor: theme.accentColor}} className="rounded-3xl w-60 h-12 mb-10 justify-center items-center" >
-          <Text  style={{color: theme.text}}>{isFasting ? "Stop Fasting" : "Start Fasting"}</Text>
-        </TouchableOpacity>
+        
       </View>
     </View>
   );

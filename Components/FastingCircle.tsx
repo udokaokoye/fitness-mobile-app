@@ -38,7 +38,7 @@ interface ComponentProps {
   overflowProgressColor?: string;
   fastingTime?: string;
 }
-const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
+const FastingCircle: React.FC<ComponentProps & CommonThemeProp> = ({
   percentageUsed,
   color,
   size,
@@ -106,16 +106,15 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
 
   return (
     <View
-      className=" flex relative items-center justify-center "
-      style={{ width: size / 2, height: size / 2 }}
+    className="flex-row relative items-center justify-center"
+    style={{ width: 400, height: 400 }}
     >
-      <Svg style={{ position: "absolute", transform: [{ rotate: "-80deg" }] }}>
-        {/* Fasting progress background */}
-        {fastingTime && (
-          <Svg style={{ position: "absolute" }}>
+      <Svg style={{transform: [{ rotate: "-80deg" }]}}>
+      {fastingTime && (
+          <Svg>
             <AnimatedCircle
-              cx={width / 4}
-              cy={height / 4}
+              cx={width / 5}
+              cy={height / 5}
               r={R}
               stroke={"#34383f"}
               strokeWidth={strokeSize}
@@ -126,10 +125,9 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
             />
           </Svg>
         )}
-
         <AnimatedCircle
-          cx={width / 4}
-          cy={height / 4}
+          cx={width / 5}
+          cy={height / 5}
           r={R}
           stroke={color}
           strokeWidth={strokeSize}
@@ -137,78 +135,23 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
           animatedProps={animatedProps}
           strokeLinecap={"round"}
           fill={theme.background2}
+         
         />
       </Svg>
-
-      {/* This Circle id for overflow */}
-      {percentageUsed > 100 && (
-        <Svg
-          style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}
-        >
-          <AnimatedCircle
-            cx={width / 4}
-            cy={height / 4}
-            r={R}
-            stroke={overflowProgressColor ? overflowProgressColor : "#e1341e"}
-            strokeWidth={strokeSize}
-            strokeDasharray={CIRCLE_LENGTH}
-            animatedProps={overflowAnimatedProps}
-            strokeLinecap={"round"}
-            fill={'transparent'}
-          />
-        </Svg>
-      )}
-
-      {/* this extra circle is used to fix the size of the circle whit it overflows */}
-      {percentageUsed > 100 && (
-        <Svg
-          style={{ position: "absolute", transform: [{ rotate: "-90deg" }] }}
-        >
-          <AnimatedCircle
-            cx={width / 4}
-            cy={height / 4}
-            r={R}
-            stroke={"transparent"}
-            strokeWidth={strokeSize}
-            strokeDasharray={CIRCLE_LENGTH}
-            animatedProps={overflowAnimatedProps}
-            strokeLinecap={"round"}
-            fill={'transparent'}
-            // fill={percentageUsed > 100 ? 'red' : 'black'}
-          />
-        </Svg>
-      )}
 
       <View
         style={{ width: width, height: height }}
         className=" absolute justify-center items-center"
       >
+        <Text className="text-xl mb-5" style={{color: theme.text}}>{progressTitle}</Text>
         {progressValue !==undefined || progressValue !==null ? (
           <View className="flex-row items-end">
-            <ReText
-              style={{
-                ...styles.progressText,
-                fontSize: progressValueTextSize,
-                color: theme.text,
-              }}
-              text={progressText}
-            />
-            {progressUnits && (
-              <Text style={{ color: theme.text }}>{progressUnits}</Text>
+            
+            {fastingTime && (
+              <Text className="text-6xl" style={{ color: theme.text }}>{fastingTime}</Text>
             )}
           </View>
         ) : ""}
-
-        {/* {fastingTime && (
-          <Text
-            style={{
-              ...styles.progressText,
-              fontSize: progressValueTextSize,
-            }}
-          >
-            {fastingTime}
-          </Text>
-        )} */}
 
         {progressTitle && (
           <Text
@@ -218,7 +161,7 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
               fontSize: progressTitleTextSize,
             }}
           >
-            {progressTitle}
+            in seconds
           </Text>
         )}
       </View>
@@ -226,7 +169,7 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
   );
 };
 
-export default ProgressCircle;
+export default FastingCircle;
 
 const styles = StyleSheet.create({
   progressText: {

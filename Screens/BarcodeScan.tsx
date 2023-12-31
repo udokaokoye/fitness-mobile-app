@@ -4,6 +4,7 @@ import {
   SafeAreaView,
   ScrollView,
   TouchableOpacity,
+  Platform,
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { Icon } from "@rneui/base";
@@ -96,7 +97,8 @@ const BarcodeScan: React.FC<NavigationProps> = ({ navigation }) => {
             ratio='16:9'
             onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
           flashMode={flashOn ? FlashMode.torch : FlashMode.off}
-          // autoFocus={AutoFocus.on}
+          autoFocus={AutoFocus.on}
+          zoom={Platform.OS === 'ios' ? 0.015 : 0}
           // focusDepth={0}
           />
         </View>
