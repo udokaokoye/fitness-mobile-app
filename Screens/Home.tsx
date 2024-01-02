@@ -42,7 +42,7 @@ const Home = ({ navigation }: any) => {
   const setmealHistory = mealsHistoryContext?.setmealHistory
   const mealHistory = mealsHistoryContext?.mealHistory;
   useEffect(() => {
-    // console.log(API_URL)
+    // console.log(user)
     // alert("hello")
     fetchMealHistory()
   }, [])

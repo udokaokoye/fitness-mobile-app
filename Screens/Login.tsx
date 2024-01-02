@@ -40,6 +40,7 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
     } else {
 
       await AsyncStorage.setItem('user', JSON.stringify(data.data))
+      authContext?.setuser(data.data);
       authContext?.setisLoggedIn(true)
     }
 

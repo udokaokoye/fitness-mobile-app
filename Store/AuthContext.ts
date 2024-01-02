@@ -22,6 +22,7 @@ export type UserInfoProps = {
   activity_level: string;
   goal_weight: number;
   dietary_preferences: string;
+  fasting_preference: string;
   favorite_foods: string;
   disliked_foods: string;
   [key: string]: any; 
