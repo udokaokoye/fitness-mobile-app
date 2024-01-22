@@ -69,7 +69,7 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
         </TouchableOpacity>
 
         <View className='flex-row justify-between self-center mt-5' style={{width: '80%'}}>
-        <TouchableOpacity className=''>
+        <TouchableOpacity className='' onPress={() => navigation.navigate('signup')}>
             <Text>Sign up</Text>
         </TouchableOpacity>
 

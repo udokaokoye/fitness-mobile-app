@@ -19,6 +19,7 @@ import { FastingContext } from "../Store/FastingContext";
 import { AuthContext } from "../Store/AuthContext";
 import StartFastingComponent from "../Components/StartFastingComponent";
 import { API_URL } from "@env";
+import { set } from "lodash";
 
 const Fasting = () => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -28,12 +29,15 @@ const Fasting = () => {
   const [intervalId, setintervalId] = useState(null);
   // const [isFasting, setisFasting] = useState(false)
   const [timeCompletedInPercentage, settimeCompletedInPercentage] = useState(0);
+  const [currentTimeNow, setcurrentTimeNow] = useState(moment().toDate().getTime())
   const fastingContext = useContext(FastingContext);
+  const [fastingId, setfastingId] = useState(null)
 
   const isFasting = fastingContext?.isFasting;
   const user = useContext(AuthContext)?.user;
 
   useEffect(() => {
+    // console.log(isFasting);
     if (isFasting) {
       const id: any = setInterval(displayTime, 1000);
       setintervalId(id);
@@ -50,10 +54,10 @@ const Fasting = () => {
   }, [isFasting]);
 
   useEffect(() => {
-    console.log(user?.fasting_preference);
+    fetchAndResumeFasting();
+    // console.log(user?.fasting_preference);
   }, []);
 
-  let currentTimeNow = moment().toDate().getTime();
   function displayTime() {
     const currentTime = new Date().getTime() - currentTimeNow;
     const hours = Math.floor(currentTime / 3600000);
@@ -76,14 +80,15 @@ const Fasting = () => {
     if (!isFasting) {
       let startTime = moment().toDate().getTime();
       let endTime = moment().add(user?.fasting_preference.split(":")[0], "hours").toDate().getTime();
-      await startFast();
+      await startFast(startTime.toString(), endTime.toString());
       fastingContext?.setfastingInfo({
         startTime: startTime,
         endTime: endTime,
       });
     } else {
-
+      endFast();
     }
+    setcurrentTimeNow(moment().toDate().getTime())
     fastingContext?.setisFasting(!isFasting);
   };
 
@@ -107,11 +112,11 @@ const Fasting = () => {
     return clampedPercentage;
   }
 
-const startFast = async () => {
+const startFast = async (startTime:string, endTime:string) => {
   const formData = new FormData();
   formData.append("userId", user?.id?.toString() || "");
-  formData.append("fastingStart", moment().toDate().getTime().toString());
-  formData.append("fastingEnd", moment().add(user?.fasting_preference.split(":")[0], "hours").toDate().getTime().toString());
+  formData.append("fastingStart",startTime);
+  formData.append("fastingEnd", endTime);
   const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/index.php`, {
     method: "POST",
     body: formData,
@@ -120,11 +125,76 @@ const startFast = async () => {
   if (data.status !== 200) {
     console.log(data.message)
   } else {
-    console.log(data.message)
+    console.log(data.data)
+    setfastingId(data.data)
   }
 }
 
-  const fetchFastingInfo = async () => {};
+const resumeFast = async (startTime:number, endTime:number) => {
+  if (!isFasting) {
+    fastingContext?.setfastingInfo({
+      startTime: startTime,
+      endTime: endTime,
+    });
+  }
+  fastingContext?.setisFasting(!isFasting);
+};
+
+const endFast = async () => {
+
+  if (fastingId !== null) {
+
+  const formData = new FormData();
+  formData.append("fastingId", fastingId ? fastingId : "");
+  formData.append('endTime', moment().toDate().getTime().toString())
+  const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/endFast.php`, {
+    method: 'POST',
+    body: formData
+  })
+
+  const data = await res.json();
+  if (data.status !== 200) {
+    console.log(data.message)
+  } else {
+    console.log(data.message)
+    fastingContext?.setisFasting(false);
+    fastingContext?.setfastingInfo({
+      startTime: null,
+      endTime: null,
+    });
+    setcurrentFastTime("00:00:00");
+    settimeCompletedInPercentage(0);
+    setfastingId(null)
+    setcurrentTimeNow(moment().toDate().getTime())
+  }
+
+      
+} else {
+  alert("fasting id is null, please restart app")
+  return;
+}
+
+}
+
+
+  const fetchAndResumeFasting = async () => {
+    const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/index.php?userId=${user?.id}&latest=true`)
+    const data = await res.json();
+    if (data.status !== 200) {
+      console.log(data.message)
+    } else {
+      const fastingInfo = data.data;
+      setfastingId(fastingInfo.id)
+      // console.log(fastingInfo.completed ? "completed" : "not completed")
+      if(!fastingInfo.completed) {
+        const startTime = moment(fastingInfo.startTime).toDate().getTime();
+        const endTime = moment(fastingInfo.endTime).toDate().getTime();
+        const currentTime = moment().toDate().getTime();
+        setcurrentTimeNow(startTime)
+        resumeFast(startTime, endTime);
+      }
+    }
+  };
   return (
     <SafeAreaView
       style={{ backgroundColor: themeContext.theme.background, flex: 1 }}

@@ -57,6 +57,9 @@ const StartFastingComponent: React.FC<StartFastingComponentProps> = ({
 
   const updateUserFastingPreference = async () => {
     if (user) {
+
+      // console.log(activeFastingOption.name)
+      // return;
       // update user in db
       const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/updateFastingPreference.php?userId=${user.id}&fastingPreference=${activeFastingOption.name}`)
       const data = await res.json();
