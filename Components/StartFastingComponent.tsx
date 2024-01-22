@@ -1,13 +1,18 @@
 import { View, Text, TouchableOpacity } from "react-native";
-import React, { useState } from "react";
+import React, { useContext, useState } from "react";
 import { Icon } from "@rneui/base";
 import { Theme } from "../Store/themes";
+import { AuthContext, UserInfoProps } from "../Store/AuthContext";
+import { API_URL } from "@env";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
 type StartFastingComponentProps = {
   theme: Theme;
+  user: UserInfoProps | null | undefined;
 };
 const StartFastingComponent: React.FC<StartFastingComponentProps> = ({
   theme,
+  user
 }) => {
   const [activeFastingOption, setactiveFastingOption] = useState<any>(null);
   const fastingOptions = [
@@ -47,6 +52,26 @@ const StartFastingComponent: React.FC<StartFastingComponentProps> = ({
       info: "he 48:0 fasting method involves a full 48-hour fasting period without calorie consumption. Individuals might initiate the fast after dinner and break it with the next day's dinner. Extended fasts like 48:0 are less frequent but may offer profound metabolic and cellular benefits. It's crucial to approach such extended fasts with caution and consider individual health conditions.",
     },
   ];
+
+  const authContext = useContext(AuthContext);
+
+  const updateUserFastingPreference = async () => {
+    if (user) {
+      // update user in db
+      const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/updateFastingPreference.php?userId=${user.id}&fastingPreference=${activeFastingOption.name}`)
+      const data = await res.json();
+      if (data.status !== 200) {
+        alert(data.message)
+      } else {
+        alert(data.message)
+        // update user in context
+        user['fasting_preference'] = activeFastingOption.name;
+        authContext?.setuser((prev) => ({ ...prev, ...user }));
+        await AsyncStorage.setItem('user', JSON.stringify(user))
+      }
+    }
+
+  };
   return (
     <View className="mx-5 mt-5 ">
       <Text className="text-center text-2xl font-bold">
@@ -62,11 +87,11 @@ const StartFastingComponent: React.FC<StartFastingComponentProps> = ({
           {fastingOptions.map((option) => (
             <TouchableOpacity
               onPress={() => setactiveFastingOption(option)}
-              style={{ backgroundColor: theme.accentColor }}
-              className=" rounded-xl mr-3 px-8 py-3"
+              style={{ backgroundColor: activeFastingOption?.name == option.name ? theme.accentColor : 'transparent' }}
+              className=" rounded-xl mr-3 px-8 py-3 border-2 border-gray-800"
               key={option.name}
             >
-              <Text className="font-bold text-white text-lg">
+              <Text style={{ color: activeFastingOption?.name == option.name ? 'white' : 'black' }} className="font-bold text-lg">
                 {option.name}
               </Text>
             </TouchableOpacity>
@@ -76,13 +101,24 @@ const StartFastingComponent: React.FC<StartFastingComponentProps> = ({
 
       {activeFastingOption && (
         <View className="mt-5">
-          <Icon name="info" size={30} style={{ alignSelf: 'flex-start'}} />
+          <Icon name="info" size={30} style={{ alignSelf: 'flex-start' }} />
 
           <Text className="mt-3 text-xl">{activeFastingOption.description}</Text>
 
           <Text className="mt-2 text-base opacity-70">{activeFastingOption.info}</Text>
         </View>
       )}
+
+      <TouchableOpacity onPress={() => updateUserFastingPreference()}>
+        <View
+          style={{ backgroundColor: theme.accentColor }}
+          className="mt-5 rounded-lg p-3"
+        >
+          <Text style={{ color: "white" }} className="text-center font-bold">
+            Start Fasting
+          </Text>
+        </View>
+      </TouchableOpacity>
     </View>
   );
 };

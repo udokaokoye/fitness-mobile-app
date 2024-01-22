@@ -18,6 +18,7 @@ import FastingCircle from "../Components/FastingCircle";
 import { FastingContext } from "../Store/FastingContext";
 import { AuthContext } from "../Store/AuthContext";
 import StartFastingComponent from "../Components/StartFastingComponent";
+import { API_URL } from "@env";
 
 const Fasting = () => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -71,14 +72,17 @@ const Fasting = () => {
       )
     );
   }
-  const toggleInterval = () => {
+  const toggleInterval = async () => {
     if (!isFasting) {
       let startTime = moment().toDate().getTime();
-      let endTime = moment().add(24, "hours").toDate().getTime();
+      let endTime = moment().add(user?.fasting_preference.split(":")[0], "hours").toDate().getTime();
+      await startFast();
       fastingContext?.setfastingInfo({
         startTime: startTime,
         endTime: endTime,
       });
+    } else {
+
     }
     fastingContext?.setisFasting(!isFasting);
   };
@@ -103,6 +107,23 @@ const Fasting = () => {
     return clampedPercentage;
   }
 
+const startFast = async () => {
+  const formData = new FormData();
+  formData.append("userId", user?.id?.toString() || "");
+  formData.append("fastingStart", moment().toDate().getTime().toString());
+  formData.append("fastingEnd", moment().add(user?.fasting_preference.split(":")[0], "hours").toDate().getTime().toString());
+  const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/index.php`, {
+    method: "POST",
+    body: formData,
+  })
+  const data = await res.json();
+  if (data.status !== 200) {
+    console.log(data.message)
+  } else {
+    console.log(data.message)
+  }
+}
+
   const fetchFastingInfo = async () => {};
   return (
     <SafeAreaView
@@ -111,7 +132,7 @@ const Fasting = () => {
       <ScrollView>
         <HomeHeader theme={theme} />
         {!user?.fasting_preference ? (
-          <StartFastingComponent theme= {theme} />
+          <StartFastingComponent theme= {theme} user={user} />
         ) : (
           <View className="mx-5">
             <View
