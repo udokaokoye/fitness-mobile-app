@@ -192,6 +192,9 @@ const endFast = async () => {
         const currentTime = moment().toDate().getTime();
         setcurrentTimeNow(startTime)
         resumeFast(startTime, endTime);
+      } else {
+        const timeSinceLastFast =  moment.duration(moment().diff(moment(fastingInfo.completedTime))).humanize();
+        setcurrentFastTime(timeSinceLastFast)
       }
     }
   };
@@ -294,6 +297,17 @@ const endFast = async () => {
             </TouchableOpacity>
           </View>
         )}
+
+        <View className="mx-3 rounded-tl-3xl rounded-tr-3xl p-5" style={{backgroundColor: theme.background2, minHeight: 400}}>
+          <View className="flex-row justify-between">
+          <CustomText className='text-xl font-bold'>What are you eating?</CustomText>
+          <TouchableOpacity onPress={() => console.log("navigate to log meal screen")} className='rounded-full bg-gray-200 w-10 h-10 justify-center items-center'>
+            <Text className="font-bold text-xl">+</Text>
+          </TouchableOpacity>
+          </View>
+
+          <CustomText className='text-xl font-bold mt-5'>Fasting History</CustomText>
+        </View>
       </ScrollView>
     </SafeAreaView>
   );
