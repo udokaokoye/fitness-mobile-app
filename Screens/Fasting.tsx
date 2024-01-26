@@ -29,9 +29,11 @@ const Fasting = () => {
   const [intervalId, setintervalId] = useState(null);
   // const [isFasting, setisFasting] = useState(false)
   const [timeCompletedInPercentage, settimeCompletedInPercentage] = useState(0);
-  const [currentTimeNow, setcurrentTimeNow] = useState(moment().toDate().getTime())
+  const [currentTimeNow, setcurrentTimeNow] = useState(
+    moment().toDate().getTime()
+  );
   const fastingContext = useContext(FastingContext);
-  const [fastingId, setfastingId] = useState(null)
+  const [fastingId, setfastingId] = useState(null);
 
   const isFasting = fastingContext?.isFasting;
   const user = useContext(AuthContext)?.user;
@@ -79,7 +81,10 @@ const Fasting = () => {
   const toggleInterval = async () => {
     if (!isFasting) {
       let startTime = moment().toDate().getTime();
-      let endTime = moment().add(user?.fasting_preference.split(":")[0], "hours").toDate().getTime();
+      let endTime = moment()
+        .add(user?.fasting_preference.split(":")[0], "hours")
+        .toDate()
+        .getTime();
       await startFast(startTime.toString(), endTime.toString());
       fastingContext?.setfastingInfo({
         startTime: startTime,
@@ -88,7 +93,7 @@ const Fasting = () => {
     } else {
       endFast();
     }
-    setcurrentTimeNow(moment().toDate().getTime())
+    setcurrentTimeNow(moment().toDate().getTime());
     fastingContext?.setisFasting(!isFasting);
   };
 
@@ -112,89 +117,93 @@ const Fasting = () => {
     return clampedPercentage;
   }
 
-const startFast = async (startTime:string, endTime:string) => {
-  const formData = new FormData();
-  formData.append("userId", user?.id?.toString() || "");
-  formData.append("fastingStart",startTime);
-  formData.append("fastingEnd", endTime);
-  const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/index.php`, {
-    method: "POST",
-    body: formData,
-  })
-  const data = await res.json();
-  if (data.status !== 200) {
-    console.log(data.message)
-  } else {
-    console.log(data.data)
-    setfastingId(data.data)
-  }
-}
-
-const resumeFast = async (startTime:number, endTime:number) => {
-  if (!isFasting) {
-    fastingContext?.setfastingInfo({
-      startTime: startTime,
-      endTime: endTime,
-    });
-  }
-  fastingContext?.setisFasting(!isFasting);
-};
-
-const endFast = async () => {
-
-  if (fastingId !== null) {
-
-  const formData = new FormData();
-  formData.append("fastingId", fastingId ? fastingId : "");
-  formData.append('endTime', moment().toDate().getTime().toString())
-  const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/endFast.php`, {
-    method: 'POST',
-    body: formData
-  })
-
-  const data = await res.json();
-  if (data.status !== 200) {
-    console.log(data.message)
-  } else {
-    console.log(data.message)
-    fastingContext?.setisFasting(false);
-    fastingContext?.setfastingInfo({
-      startTime: null,
-      endTime: null,
-    });
-    setcurrentFastTime("00:00:00");
-    settimeCompletedInPercentage(0);
-    setfastingId(null)
-    setcurrentTimeNow(moment().toDate().getTime())
-  }
-
-      
-} else {
-  alert("fasting id is null, please restart app")
-  return;
-}
-
-}
-
-
-  const fetchAndResumeFasting = async () => {
-    const res = await fetch(`http://${API_URL}/fitness-backend/api/fasting/index.php?userId=${user?.id}&latest=true`)
+  const startFast = async (startTime: string, endTime: string) => {
+    const formData = new FormData();
+    formData.append("userId", user?.id?.toString() || "");
+    formData.append("fastingStart", startTime);
+    formData.append("fastingEnd", endTime);
+    const res = await fetch(
+      `http://${API_URL}/fitness-backend/api/fasting/index.php`,
+      {
+        method: "POST",
+        body: formData,
+      }
+    );
     const data = await res.json();
     if (data.status !== 200) {
-      console.log(data.message)
+      console.log(data.message);
+    } else {
+      console.log(data.data);
+      setfastingId(data.data);
+    }
+  };
+
+  const resumeFast = async (startTime: number, endTime: number) => {
+    if (!isFasting) {
+      fastingContext?.setfastingInfo({
+        startTime: startTime,
+        endTime: endTime,
+      });
+    }
+    fastingContext?.setisFasting(!isFasting);
+  };
+
+  const endFast = async () => {
+    if (fastingId !== null) {
+      const formData = new FormData();
+      formData.append("fastingId", fastingId ? fastingId : "");
+      formData.append("endTime", moment().toDate().getTime().toString());
+      const res = await fetch(
+        `http://${API_URL}/fitness-backend/api/fasting/endFast.php`,
+        {
+          method: "POST",
+          body: formData,
+        }
+      );
+
+      const data = await res.json();
+      if (data.status !== 200) {
+        console.log(data.message);
+      } else {
+        console.log(data.message);
+        fastingContext?.setisFasting(false);
+        fastingContext?.setfastingInfo({
+          startTime: null,
+          endTime: null,
+        });
+        setcurrentFastTime("00:00:00");
+        settimeCompletedInPercentage(0);
+        setfastingId(null);
+        setcurrentTimeNow(moment().toDate().getTime());
+      }
+    } else {
+      alert("fasting id is null, please restart app");
+      return;
+    }
+  };
+
+  const fetchAndResumeFasting = async () => {
+    const res = await fetch(
+      `http://${API_URL}/fitness-backend/api/fasting/index.php?userId=${user?.id}&latest=true`
+    );
+    const data = await res.json();
+    if (data.status !== 200) {
+      console.log(data.message);
     } else {
       const fastingInfo = data.data;
-      setfastingId(fastingInfo.id)
+      setfastingId(fastingInfo.id);
       // console.log(fastingInfo.completed ? "completed" : "not completed")
-      if(!fastingInfo.completed) {
+      if (!fastingInfo.completed) {
         const startTime = moment(fastingInfo.startTime).toDate().getTime();
         const endTime = moment(fastingInfo.endTime).toDate().getTime();
         const currentTime = moment().toDate().getTime();
-        setcurrentTimeNow(startTime)
+        setcurrentTimeNow(startTime);
         resumeFast(startTime, endTime);
       } else {
-        const timeSinceLastFast =  moment.duration(moment().diff(moment(fastingInfo.completedTime))).humanize();
-        setcurrentFastTime(timeSinceLastFast)
+        const timeSinceLastFast = moment
+          .duration(moment().diff(moment(fastingInfo.completedTime)))
+          .humanize();
+        setcurrentFastTime(timeSinceLastFast);
       }
     }
   };
@@ -205,7 +214,7 @@ const endFast = async () => {
       <ScrollView>
         <HomeHeader theme={theme} />
         {!user?.fasting_preference ? (
-          <StartFastingComponent theme= {theme} user={user} />
+          <StartFastingComponent theme={theme} user={user} />
         ) : (
           <View className="mx-5">
             <View
@@ -298,15 +307,30 @@ const endFast = async () => {
           </View>
         )}
 
-        <View className="mx-3 rounded-tl-3xl rounded-tr-3xl p-5" style={{backgroundColor: theme.background2, minHeight: 400}}>
-          <View className="flex-row justify-between">
-          <CustomText className='text-xl font-bold'>What are you eating?</CustomText>
-          <TouchableOpacity onPress={() => console.log("navigate to log meal screen")} className='rounded-full bg-gray-200 w-10 h-10 justify-center items-center'>
-            <Text className="font-bold text-xl">+</Text>
-          </TouchableOpacity>
+        <View
+          className="mx-3 rounded-3xl p-3"
+          style={{ backgroundColor: theme.background2 }}
+        >
+          <View className="flex-row justify-between items-center">
+            <CustomText className="text-xl font-bold">
+              What are you eating?
+            </CustomText>
+            <TouchableOpacity
+              onPress={() => console.log("navigate to log meal screen")}
+              className="rounded-full bg-gray-200 w-10 h-10 justify-center items-center"
+            >
+              <Text className="font-bold text-xl">+</Text>
+            </TouchableOpacity>
           </View>
+        </View>
 
-          <CustomText className='text-xl font-bold mt-5'>Fasting History</CustomText>
+        <View
+          className="mx-3 rounded-3xl p-5 mt-3"
+          style={{ backgroundColor: theme.background2 }}
+        >
+          <CustomText className="text-xl font-bold mt-5">
+            Fasting History
+          </CustomText>
         </View>
       </ScrollView>
     </SafeAreaView>

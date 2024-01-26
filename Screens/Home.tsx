@@ -6,8 +6,9 @@ import {
   TouchableOpacity,
   StatusBar,
   RefreshControl,
+  Platform,
 } from "react-native";
-import React, { useCallback, useContext, useEffect, useState } from "react";
+import React, { useCallback, useContext, useEffect, useState, useRef } from "react";
 import HomeHeader from "../Components/HomeHeader";
 import { ThemeContext } from "../Store/ThemeContext";
 import FoodSearchInput from "../Components/FoodSearchInput";
@@ -29,6 +30,8 @@ import { MealsHistoryContext } from "../Store/MealsHistoryContext";
 import { logMeal, logMealFromBackend } from "../redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice";
 import {API_URL} from "@env"
+import * as Device from 'expo-device';
+import * as Notifications from 'expo-notifications';
 const Home = ({ navigation }: any) => {
   const user = useContext(AuthContext)?.user;
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -41,6 +44,9 @@ const Home = ({ navigation }: any) => {
 
   const setmealHistory = mealsHistoryContext?.setmealHistory
   const mealHistory = mealsHistoryContext?.mealHistory;
+
+  const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
+  const [notification, setNotification] = useState<any>(false);
   useEffect(() => {
     // console.log(user)
     // alert("hello")
@@ -166,6 +172,47 @@ const Home = ({ navigation }: any) => {
 
   const caloriesInformation = useSelector((state: RootState) => state.userCalories)
   const mealsInformation = useSelector((state: RootState) => state.userMeals)
+
+  // const notificationListener = useRef<any>();
+  // const responseListener = useRef<any>();
+
+  // async function registerForPushNotificationsAsync() {
+  //   let token;
+  //   if (Device.isDevice) {
+  //     const { status: existingStatus } = await Notifications.getPermissionsAsync();
+  //     let finalStatus = existingStatus;
+  //     if (existingStatus !== 'granted') {
+  //       const { status } = await Notifications.requestPermissionsAsync();
+  //       finalStatus = status;
+  //     }
+  //     if (finalStatus !== 'granted') {
+  //       alert('Failed to get push token for push notification!');
+  //       return;
+  //     }
+  //     token = (await Notifications.getExpoPushTokenAsync()).data;
+  //     console.log("Token")
+  //     // updateNotificationTokenInDB(token);
+
+  //   } else {
+  //     alert('Must use physical device for Push Notifications');
+  //   }
+  
+  //   if (Platform.OS === 'android') {
+  //     Notifications.setNotificationChannelAsync('default', {
+  //       name: 'default',
+  //       importance: Notifications.AndroidImportance.MAX,
+  //       vibrationPattern: [0, 250, 250, 250],
+  //       lightColor: '#FF231F7C',
+  //     });
+  //   }
+  
+  //   return token;
+  // }
+
+  // useEffect(() => {
+  //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
+
+  // }, []);
   return (
     <SafeAreaView
       style={{ backgroundColor: themeContext.theme.background, flex: 1 }}

@@ -153,7 +153,7 @@ const FastingCircle: React.FC<ComponentProps & CommonThemeProp> = ({
           </View>
         ) : ""}
 
-        {progressTitle && (
+        {/* {progressTitle && (
           <Text
             className="text-xs mt-2"
             style={{
@@ -163,7 +163,7 @@ const FastingCircle: React.FC<ComponentProps & CommonThemeProp> = ({
           >
             in seconds
           </Text>
-        )}
+        )} */}
       </View>
     </View>
   );
