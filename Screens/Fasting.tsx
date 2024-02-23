@@ -7,7 +7,7 @@ import {
 } from "react-native";
 import React, { useContext, useEffect, useState } from "react";
 import { ThemeContext } from "../Store/ThemeContext";
-import { blackTheme } from "../Store/themes";
+import { Theme, blackTheme } from "../Store/themes";
 import HomeHeader from "../Components/HomeHeader";
 import FastingCard from "../Components/FastingCard";
 import { useSelector } from "react-redux";
@@ -20,8 +20,10 @@ import { AuthContext } from "../Store/AuthContext";
 import StartFastingComponent from "../Components/StartFastingComponent";
 import { API_URL } from "@env";
 import { set } from "lodash";
+import { CommonThemeProp, NavigationProps } from "../utils/commonProps";
+import ProgressCircle from "../Components/ProgressCircle";
 
-const Fasting = () => {
+const Fasting: React.FC<NavigationProps> = ({navigation}) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
 
@@ -212,7 +214,7 @@ const Fasting = () => {
       style={{ backgroundColor: themeContext.theme.background, flex: 1 }}
     >
       <ScrollView>
-        <HomeHeader theme={theme} />
+        <HomeHeader theme={theme} navigation={navigation} />
         {!user?.fasting_preference ? (
           <StartFastingComponent theme={theme} user={user} />
         ) : (
@@ -324,17 +326,35 @@ const Fasting = () => {
           </View>
         </View>
 
-        <View
-          className="mx-3 rounded-3xl p-5 mt-3"
-          style={{ backgroundColor: theme.background2 }}
-        >
-          <CustomText className="text-xl font-bold mt-5">
+        <View className="mx-3 rounded-3xl p-5 mt-3" style={{ backgroundColor: theme.background2 }} >
+          {/* <CustomText className="text-xl font-bold mt-5">
             Fasting History
-          </CustomText>
+          </CustomText> */}
+
+          <DayCIrcle theme={theme} />
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
+
+const DayCIrcle:  React.FC<CommonThemeProp> = ({theme}) => {
+  return (
+    <View>
+      <Text>Wed</Text>
+      <ProgressCircle
+              progressValue={0}
+              progressTitle={null}
+              strokeSize={5}
+              size={100}
+              percentageUsed={90}
+              color={'red'}
+              progressValueTextSize={40}
+              progressTitleTextSize={16}
+              theme={theme}
+            />
+    </View>
+  );
+    }
 
 export default Fasting;

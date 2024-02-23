@@ -57,7 +57,7 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
             <ScrollView >
                 <View style={{ height: 30, position: 'relative' }} className=''>
                     <View className=' flex-row justify-between mx-8 mt-2'>
-                        <Icon color={theme?.text} name='arrow-back-ios' />
+                        <TouchableOpacity onPress={() => navigation.navigate('home')}><Icon color={theme?.text} name='arrow-back-ios' /></TouchableOpacity>
                         <TouchableOpacity className=' flex-row w-20 ' onPress={() => setshowProfileMenu(!showProfileMenu)}>
                         <Icon color={theme?.text} style={{marginLeft: 60}} name='more-vertical' type='feather' />
                         </TouchableOpacity>

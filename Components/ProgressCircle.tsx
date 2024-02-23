@@ -85,6 +85,7 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
 
   useEffect(() => {
     onPress();
+    console.log(progressTitle)
   }, []);
 
   const onPress = useCallback(() => {
@@ -183,7 +184,7 @@ const ProgressCircle: React.FC<ComponentProps & CommonThemeProp> = ({
         style={{ width: width, height: height }}
         className=" absolute justify-center items-center"
       >
-        {progressValue !==undefined || progressValue !==null ? (
+        {progressValue !==undefined || progressValue !==null || progressTitle !== null ? (
           <View className="flex-row items-end">
             <ReText
               style={{

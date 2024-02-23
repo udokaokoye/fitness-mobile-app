@@ -125,7 +125,7 @@ export default function App() {
                         <Text style={{ color: theme.text }}>Discover</Text>
                       ),
                       tabBarIcon: () => (
-                        <Icon name="search" type="evilicon" color={theme.text} />
+                        <Icon name="compass" type="feather" color={theme.text} />
                       )
                     }}
                   />

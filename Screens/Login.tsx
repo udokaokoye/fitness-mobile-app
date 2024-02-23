@@ -5,7 +5,7 @@ import { blackTheme } from '../Store/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { NavigationProps } from '../utils/commonProps';
 import { AuthContext } from '../Store/AuthContext';
-import { API_URL } from '@env';
+import { API_URL, APP_NAME } from '@env';
 
 const Login: React.FC<NavigationProps> = ({navigation}) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -56,7 +56,7 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
 
       <View className='mt-20'>
 
-        <Text className='text-2xl font-bold text-center mb-5'>Fitness App</Text>
+        <Text className='text-2xl font-bold text-center mb-5'>{APP_NAME} Login</Text>
 
         {error && <Text className='text-center mb-5 text-red-500 font-bold'>{error}</Text>}
 

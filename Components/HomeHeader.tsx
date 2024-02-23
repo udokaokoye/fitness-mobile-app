@@ -1,14 +1,14 @@
 import { View, Text, StyleSheet, Image, TouchableOpacity } from "react-native";
 import React, { useContext, useEffect } from "react";
 import { Icon } from "@rneui/themed";
-import { CommonThemeProp } from "../utils/commonProps";
+import { CommonThemeProp, NavigationProps } from "../utils/commonProps";
 import CustomText from "./CustomText";
 import moment from "moment";
 import { AuthContext } from "../Store/AuthContext";
 import { logUserOut } from "../utils/lib";
 
 
-const HomeHeader: React.FC<CommonThemeProp> = ({ theme }) => {
+const HomeHeader: React.FC<CommonThemeProp & NavigationProps> = ({ theme, navigation }) => {
 
   const authContext = useContext(AuthContext)
 
@@ -23,7 +23,7 @@ const HomeHeader: React.FC<CommonThemeProp> = ({ theme }) => {
   }
   return (
     <View className="px-5 flex-row justify-between items-center">
-      <View className="flex-row gap-2">
+      <TouchableOpacity onPress={() => navigation.navigate('profileTab')} className="flex-row gap-2">
         <View
           style={{ width: 50, height: 50 }}
           className=" rounded-full overflow-hidden"
@@ -35,7 +35,7 @@ const HomeHeader: React.FC<CommonThemeProp> = ({ theme }) => {
           <Text style={{ color: theme?.text }} className=" text-xl font-bold">Hello, {user?.firstName}</Text>
           <Text style={{ color: theme?.text }} className="text-xs">Good Morning</Text>
         </View>
-      </View>
+      </TouchableOpacity>
 
       <TouchableOpacity onPress={logout} style={{ backgroundColor: theme.lighterBackground }} className=" justify-center items-center p-3 rounded-lg">
         {/* <Icon color={theme.text} name="notifications-outline" type="ionicon" /> */}

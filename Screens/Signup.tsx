@@ -18,7 +18,7 @@ import { getUsersAccessToken, heightData, suggestText } from "../utils/lib";
 import { Icon } from "@rneui/base";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { set } from "lodash";
-import { API_URL } from "@env";
+import { API_URL, APP_NAME } from "@env";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -240,7 +240,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   return (
     <SafeAreaView className="flex-1 ">
       <View className="mt-20 mx-5">
-        <Text className="text-2xl font-bold text-center mb-3">Fitness App</Text>
+        <Text className="text-2xl font-bold text-center mb-3">{APP_NAME}</Text>
         <Text className="text-center mb-5 text-base text-gray-500">
           Signup and start making healthier decisions.
         </Text>

@@ -9,6 +9,7 @@ import { TouchableOpacity } from 'react-native'
 import { ThemeContext } from '../Store/ThemeContext'
 import { blackTheme } from '../Store/themes'
 import { NavigationProps } from '../utils/commonProps'
+import { API_URL, APP_NAME, APP_NAME1 } from '@env'
 
 const Auth: React.FC<NavigationProps> = ({ navigation }) => {
     const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -30,7 +31,7 @@ const Auth: React.FC<NavigationProps> = ({ navigation }) => {
                     style={{ width: '100%', height: 600 }}
                 >
                     <View style={{ top: 280, width: '100%' }} className=' bottom-0 absolute'>
-                        <Text className=' text-3xl font-bold text-center'>Fitness App</Text>
+                        <Text className=' text-3xl font-bold text-center'>{APP_NAME}</Text>
                         <Text className=' text-center mt-5 font-bold text-base text-gray-400'>Take the next step toward a healthier, more active life</Text>
 
                         <TouchableOpacity className='bg-blue-300 rounded-3xl justify-center self-center mt-5 items-center' style={{ backgroundColor: theme.accentColor, width: '70%', height: 60 }}>

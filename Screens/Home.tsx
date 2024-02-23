@@ -29,7 +29,7 @@ import moment from "moment";
 import { MealsHistoryContext } from "../Store/MealsHistoryContext";
 import { logMeal, logMealFromBackend } from "../redux/reducers/caloriesSlice";
 import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice";
-import {API_URL} from "@env"
+import { API_URL } from "@env"
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
 const Home = ({ navigation }: any) => {
@@ -69,31 +69,31 @@ const Home = ({ navigation }: any) => {
 
     const initialMeals: UserMealsProp = {
       breakfast: {
-          calories: 0,
-          macros: {
-              protien: 0,
-              carbohydrate: 0,
-              fat:0
-          }
+        calories: 0,
+        macros: {
+          protien: 0,
+          carbohydrate: 0,
+          fat: 0
+        }
       },
       lunch: {
-          calories: 0,
-          macros: {
-              protien: 0,
-              carbohydrate: 0,
-              fat:0
-          }
-      }, 
+        calories: 0,
+        macros: {
+          protien: 0,
+          carbohydrate: 0,
+          fat: 0
+        }
+      },
       dinner: {
-          calories: 0,
-          macros: {
-              protien: 0,
-              carbohydrate: 0,
-              fat:0
-          }
-      }   
-      
-  }
+        calories: 0,
+        macros: {
+          protien: 0,
+          carbohydrate: 0,
+          fat: 0
+        }
+      }
+
+    }
 
 
     data.message.map((foodData: any) => {
@@ -137,23 +137,23 @@ const Home = ({ navigation }: any) => {
     );
 
     dispatch(logBreakfast({
-      caloriesIN:initialMeals.breakfast.calories,
-            carbohydrate: initialMeals.breakfast.macros.carbohydrate,
-            protien: initialMeals.breakfast.macros.protien,
-            fat: initialMeals.breakfast.macros.fat,
+      caloriesIN: initialMeals.breakfast.calories,
+      carbohydrate: initialMeals.breakfast.macros.carbohydrate,
+      protien: initialMeals.breakfast.macros.protien,
+      fat: initialMeals.breakfast.macros.fat,
     }))
 
     dispatch(logLunch({
-      caloriesIN:initialMeals.lunch.calories,
-            carbohydrate: initialMeals.lunch.macros.carbohydrate,
-            protien: initialMeals.lunch.macros.protien,
-            fat: initialMeals.lunch.macros.fat,
+      caloriesIN: initialMeals.lunch.calories,
+      carbohydrate: initialMeals.lunch.macros.carbohydrate,
+      protien: initialMeals.lunch.macros.protien,
+      fat: initialMeals.lunch.macros.fat,
     }))
     dispatch(logDinner({
-      caloriesIN:initialMeals.dinner.calories,
-            carbohydrate: initialMeals.dinner.macros.carbohydrate,
-            protien: initialMeals.dinner.macros.protien,
-            fat: initialMeals.dinner.macros.fat,
+      caloriesIN: initialMeals.dinner.calories,
+      carbohydrate: initialMeals.dinner.macros.carbohydrate,
+      protien: initialMeals.dinner.macros.protien,
+      fat: initialMeals.dinner.macros.fat,
     }))
     setRefreshing(false)
   }
@@ -166,7 +166,7 @@ const Home = ({ navigation }: any) => {
       settooltipOpen(false)
     }, 2000);
   }, []);
-  
+
 
   const theme = themeContext.theme;
 
@@ -196,7 +196,7 @@ const Home = ({ navigation }: any) => {
   //   } else {
   //     alert('Must use physical device for Push Notifications');
   //   }
-  
+
   //   if (Platform.OS === 'android') {
   //     Notifications.setNotificationChannelAsync('default', {
   //       name: 'default',
@@ -205,7 +205,7 @@ const Home = ({ navigation }: any) => {
   //       lightColor: '#FF231F7C',
   //     });
   //   }
-  
+
   //   return token;
   // }
 
@@ -221,15 +221,19 @@ const Home = ({ navigation }: any) => {
 
       <ScrollView refreshControl={<RefreshControl refreshing={refreshing} onRefresh={onRefresh} />}>
         <View className=" flex-1">
-          <HomeHeader theme={theme} />
+          <HomeHeader theme={theme} navigation={navigation} />
           <FoodSearchInput navigation={navigation} theme={theme} />
           {/* <MainCarousel theme={theme} /> */}
           <CaloriesDisplayCard theme={theme} calories={caloriesInformation} />
-          <MacrosInfo theme={theme}  calories={caloriesInformation} />
+          <MacrosInfo theme={theme} calories={caloriesInformation} />
           {/* <GoalSummary theme={theme} /> */}
 
 
-          <Tooltip containerStyle={{width: '60%', margin: 0, padding: 0}} backgroundColor={theme.accentColor} withOverlay={false} closeOnlyOnBackdropPress visible={tooltipOpen} popover={<Text className="text-white text-center"> Updated </Text>} withPointer={false} />
+          <Tooltip containerStyle={{ width: '60%', margin: 0, padding: 0, }} 
+          backgroundColor={theme.accentColor} withOverlay={true} 
+          closeOnlyOnBackdropPress visible={tooltipOpen} 
+          popover={<Text className="text-white text-center"> Updated </Text>} withPointer={false} 
+          />
 
           <CaloriesBreakdown navigation={navigation} theme={theme} meals={mealsInformation} />
 

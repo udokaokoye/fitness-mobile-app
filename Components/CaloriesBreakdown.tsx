@@ -29,7 +29,7 @@ const CaloriesBreakdown: React.FC<CommonThemeProp & ComponentProps & NavigationP
           </View>
           </View>
 
-          <TouchableOpacity style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
+          <TouchableOpacity onPress={() => navigation.navigate('searchFood')} style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
             <Icon name='add' type='ionicons' color={'white'} />
           </TouchableOpacity>
         </TouchableOpacity>
@@ -47,7 +47,7 @@ const CaloriesBreakdown: React.FC<CommonThemeProp & ComponentProps & NavigationP
           </View>
           </View>
 
-          <TouchableOpacity style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
+          <TouchableOpacity onPress={() => navigation.navigate('searchFood')} style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
             <Icon name='add' type='ionicons' color={'white'} />
           </TouchableOpacity>
         </TouchableOpacity>
@@ -65,7 +65,7 @@ const CaloriesBreakdown: React.FC<CommonThemeProp & ComponentProps & NavigationP
           </View>
           </View>
 
-          <TouchableOpacity style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
+          <TouchableOpacity onPress={() => navigation.navigate('searchFood')} style={{backgroundColor: theme.accentColor}} className=' w-10 h-10 justify-center items-center rounded-full'>
             <Icon name='add' type='ionicons' color={'white'} />
           </TouchableOpacity>
         </TouchableOpacity>
