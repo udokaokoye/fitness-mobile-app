@@ -1,5 +1,5 @@
 import { View, Text,SafeAreaView, TextInput, TouchableOpacity } from 'react-native'
-import React, { useContext, useState } from 'react'
+import React, { useContext, useEffect, useState } from 'react'
 import { ThemeContext } from '../Store/ThemeContext';
 import { blackTheme } from '../Store/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
@@ -14,6 +14,8 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
   const [password, setpassword] = useState('');
   const [error, seterror] = useState(null);
   const authContext = useContext(AuthContext)
+
+  
 
   const loginHandler = async () => {
     const formData = new FormData()
@@ -38,7 +40,8 @@ const Login: React.FC<NavigationProps> = ({navigation}) => {
       seterror(data.message)
       return
     } else {
-
+      console.log(data.data)
+      // return;
       await AsyncStorage.setItem('user', JSON.stringify(data.data))
       authContext?.setuser(data.data);
       authContext?.setisLoggedIn(true)

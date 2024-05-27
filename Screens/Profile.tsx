@@ -7,8 +7,9 @@ import { Theme, blackTheme, lightTheme } from '../Store/themes';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import { set } from 'lodash';
 import { NavigationProps } from '../utils/commonProps';
+import { logUserOut } from '../utils/lib';
 
-const Profile: React.FC<NavigationProps> = ({navigation}) => {
+const Profile: React.FC<NavigationProps> = ({ navigation }) => {
 
     const [themeToggleValue, setthemeToggleValue] = useState(false)
     const user = useContext(AuthContext)?.user;
@@ -16,22 +17,24 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
     const themeContext = useContext(ThemeContext)
     const theme = themeContext?.theme
 
+    const authContext = useContext(AuthContext)
+
     useEffect(() => {
         async function checkUserThemeValue() {
             const currentTheme = JSON.parse(await AsyncStorage.getItem('theme') || '{}')
 
-        if (currentTheme) {
-            if (currentTheme?.background === '#FFFFFF') {
-                setthemeToggleValue(false)
-            } else {
-                setthemeToggleValue(true)
+            if (currentTheme) {
+                if (currentTheme?.background === '#FFFFFF') {
+                    setthemeToggleValue(false)
+                } else {
+                    setthemeToggleValue(true)
+                }
             }
-        }
         }
 
         checkUserThemeValue()
     }, [theme])
-    
+
 
     const toggleDarkMode = async () => {
         // themeContext?.setTheme(blackTheme)
@@ -51,15 +54,19 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
         }
         // console.log(themeContext?.theme)
     }
+    async function logout() {
+        await logUserOut()
+        authContext?.setisLoggedIn(false)
+    }
     return (
-        <SafeAreaView  style={{ flex: 1, backgroundColor: theme?.background2 }}>
+        <SafeAreaView style={{ flex: 1, backgroundColor: theme?.background2 }}>
 
             <ScrollView >
                 <View style={{ height: 30, position: 'relative' }} className=''>
                     <View className=' flex-row justify-between mx-8 mt-2'>
                         <TouchableOpacity onPress={() => navigation.navigate('home')}><Icon color={theme?.text} name='arrow-back-ios' /></TouchableOpacity>
                         <TouchableOpacity className=' flex-row w-20 ' onPress={() => setshowProfileMenu(!showProfileMenu)}>
-                        <Icon color={theme?.text} style={{marginLeft: 60}} name='more-vertical' type='feather' />
+                            <Icon color={theme?.text} style={{ marginLeft: 60 }} name='more-vertical' type='feather' />
                         </TouchableOpacity>
                     </View>
 
@@ -75,8 +82,11 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
 
                             elevation: 6
                         }} className='bg-gray-200 absolute'>
-                            <SettingsMenuComponent theme={theme} menuTitle='Help ?' menuIcon='help-circle' iconType='feather' withArrowRight={false} />
-                            <SettingsMenuComponent theme={theme} menuTitle='Logout' menuIcon='exit-outline' iconType='ionicon' withArrowRight={false} />
+                            <SettingsMenuComponent onclick={() => {
+                                setshowProfileMenu(false);
+                                navigation.navigate('help')
+                            }} theme={theme} menuTitle='Help ?' menuIcon='help-circle' iconType='feather' withArrowRight={false} />
+                            <SettingsMenuComponent onclick={() => logout()} theme={theme} menuTitle='Logout' menuIcon='exit-outline' iconType='ionicon' withArrowRight={false} />
                         </View>
                     )}
                 </View>
@@ -86,16 +96,17 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
                         className=" rounded-full overflow-hidden mx-auto mt-10">
                         {user?.avatar ? (
                             // <Image source={{ uri: user?.avatar }} style={{ width: 100, height: 100 }} />
-                            <Text>User Image Here</Text>
+                            <Image style={{ width: 120, height: 120 }} source={{ uri: user.avatar }} />
+
                         ) : (
                             <Image style={{ width: 120, height: 120 }} source={{ uri: 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg' }} />
 
                         )}
                     </View>
-                    <Text style={{color: theme?.text}} className='text-3xl text-center mt-5'>{user?.firstName} {user?.lastName}</Text>
-                    <Text style={{color: theme?.text}} className='text-center mt-2'>@leviokoye</Text>
+                    <Text style={{ color: theme?.text }} className='text-3xl text-center mt-5'>{user?.firstName} {user?.lastName}</Text>
+                    <Text style={{ color: theme?.text }} className='text-center mt-2'>@leviokoye</Text>
                     <TouchableOpacity onPress={() => navigation.navigate('editProfile')} className='border border-gray-400 rounded-xl px-5 py-2 mt-5 mx-auto' style={{ width: 200, height: 50 }}>
-                        <Text style={{color: theme?.accentColor}} className='m-auto font-bold '>Edit Profile</Text>
+                        <Text style={{ color: theme?.accentColor }} className='m-auto font-bold '>Edit Profile</Text>
                     </TouchableOpacity>
                 </View>
 
@@ -104,8 +115,8 @@ const Profile: React.FC<NavigationProps> = ({navigation}) => {
                     <SettingsMenuComponent theme={theme} menuTitle='Dark Mode' menuIcon='moon' iconType='feather' withArrowRight={false} darkmode themeToggleValue={themeToggleValue} onclick={toggleDarkMode} />
                     <SettingsMenuComponent theme={theme} menuTitle='Settings' menuIcon='settings' iconType='feather' />
                     <SettingsMenuComponent onclick={() => navigation.navigate('healthFitnessSettings')} theme={theme} menuTitle='Health & Fitness' menuIcon='fitness-outline' iconType='ionicon' />
-                    <SettingsMenuComponent theme={theme} menuTitle='Help?' menuIcon='help-circle' iconType='feather' />
-                    <SettingsMenuComponent theme={theme} menuTitle='Logout' menuIcon='exit-outline' iconType='ionicon' />
+                    <SettingsMenuComponent onclick={() => navigation.navigate('help')} theme={theme} menuTitle='Help?' menuIcon='help-circle' iconType='feather' />
+                    <SettingsMenuComponent onclick={() => logout()} theme={theme} menuTitle='Logout' menuIcon='exit-outline' iconType='ionicon' />
                     <Text className='text-gray-500 text-lg text-center mt-auto mb-56'>@Fitness App v1.00</Text>
                 </View>
 
@@ -127,7 +138,7 @@ interface SettingsMenuProps {
     onclick?: () => void
 }
 
-export const SettingsMenuComponent: React.FC<SettingsMenuProps> = ({ menuTitle, menuIcon, iconType, withArrowRight = true, darkmode=false, themeToggleValue, onclick, theme }) => (
+export const SettingsMenuComponent: React.FC<SettingsMenuProps> = ({ menuTitle, menuIcon, iconType, withArrowRight = true, darkmode = false, themeToggleValue, onclick, theme }) => (
     <TouchableOpacity className='p-2 flex-row items-center mb-3' onPress={() => onclick ? onclick() : console.log(null)}>
         <View style={{ width: 40, height: 40 }} className='bg-gray-200 justify-center items-center rounded-xl'>
             <Icon name={menuIcon} type={iconType} size={18} />

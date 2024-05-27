@@ -14,8 +14,9 @@ import { set } from 'lodash'
 import { auth } from '../../firebase'
 import { parse } from 'react-native-redash'
 import moment from 'moment'
+import CustomText from '../../Components/CustomText'
 
-const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({navigation}) => {
+const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({ navigation }) => {
 
 
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
@@ -32,6 +33,11 @@ const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({na
   const [newWeight, setnewWeight] = useState('')
   const [newGoalWeight, setnewGoalWeight] = useState('')
   const [newCalories, setnewCalories] = useState('')
+
+  // macros
+  const [newProtein, setnewProtein] = useState<number | null>()
+  const [newFat, setnewFat] = useState<number | null>()
+  const [newCarbohydrate, setnewCarbohydrate] = useState<number | null>()
 
   const [valueToUpdate, setvalueToUpdate] = useState<string | null>()
 
@@ -95,20 +101,60 @@ const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({na
         refRBSheet.current.close()
       }
     } catch (error) {
-
+      alert('Error occured while processing your request, try again later');
     }
 
   }
 
+  const updateMacros = async () => {
+    console.log(newProtein)
+    console.log(newCarbohydrate)
+    console.log(newFat)
+    const formData = new FormData()
+
+
+    formData.append('userId', user?.id || '')
+    formData.append('protein', newProtein?.toString() || '')
+    formData.append('carbohydrate', newCarbohydrate?.toString() || '')
+    formData.append('fat', newFat?.toString() || '')
+
+    try {
+      const res = await fetch(`http://${API_URL}/fitness-backend/api/user/updateMacros.php`, {
+        method: 'POST',
+        body: formData
+      })
+      const data = await res.json()
+      console.log(data)
+      if (data.status !== 200) {
+        alert(data.message)
+        return
+      } else {
+        if (user) {
+          user['protein'] = newProtein || user.protein;
+          user['fat'] = newFat || user.protein;
+          user['carbohydrate'] = newCarbohydrate || user.carbohydrate;
+
+          updateUserAsyncStorage(user)
+          authContext?.setuser((prev) => ({ ...prev, ...user }))
+        }
+        alert(data.message)
+        refRBSheet.current.close()
+      }
+    } catch (error) {
+      alert('Error occured while processing your request, try again later');
+    }
+    // alert('In Progress  ')
+  }
+
   return (
-    <SafeAreaView className='flex-1'>
+    <SafeAreaView style={{ backgroundColor: themeContext.theme.background}} className='flex-1'>
       <View style={{ height: 30, position: 'relative' }} className=' mx-8 flex-row justify-center items-center'>
 
         <TouchableOpacity onPress={() => navigation.goBack()}>
           <Icon color={theme?.text} name='arrow-back-ios' />
         </TouchableOpacity>
 
-        <Text style={{ width: '100%' }} className='text-lg font-bold text-center'>Health & Fitness</Text>
+        <CustomText style={{ width: '100%' }} className='text-lg font-bold text-center'>Health & Fitness</CustomText>
 
       </View>
       <ScrollView className='flex-1'>
@@ -162,6 +208,18 @@ const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({na
 
           />
 
+          <HealthFitnessMenu onClick={() => {
+            setvalueToUpdate(user?.daily_calories.toString())
+            setactiveHealthMenu('macros')
+            setactiveHealthMenuValue(user?.daily_calories.toString())
+
+            refRBSheet.current.open()
+          }} theme={theme}
+            title='Macros'
+            value={'P ' + user?.protein.toString() + 'g - C ' + user?.carbohydrate.toString() + 'g - F ' + user?.fat.toString() + 'g'}
+
+          />
+
 
         </View>
       </ScrollView>
@@ -170,21 +228,50 @@ const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({na
         ref={refRBSheet}
         closeOnDragDown={true}
         closeOnPressMask={true}
-        height={Dimensions.get("screen").height / 1.5}
+        height={400}
         customStyles={{
           wrapper: {
             backgroundColor: "transparent",
-            // height: 500
+            height: 500
           },
           draggableIcon: {
             backgroundColor: "#000",
           },
-        }}
+          container: {
+            backgroundColor: theme.background
+          }
+          
+        }
+        
+      }
       >
 
-        <View className='mx-5'>
-          <Text className='text-lg text-center font-bold capitalize '>Update {activeHealthMenu}</Text>
+        <View  className='mx-5'>
+          <CustomText className='text-lg text-center font-bold capitalize '>Update {activeHealthMenu}</CustomText>
+          {
+            activeHealthMenu == 'macros' && (
+              <View>
 
+                <View className='mb-5' style={{ width: "100%" }}>
+                  <CustomText className='mb-2'>Protein</CustomText>
+                  <TextInput onChangeText={(txt) => setnewProtein(parseInt(txt))} placeholderTextColor={theme.text} placeholder='Enter new goal' style={{ width: '89%', height: 50, backgroundColor: theme.background2 }} className=' rounded-xl px-5' />
+
+                </View>
+
+                <View className='mb-5' style={{ width: "100%" }}>
+                  <CustomText className='mb-2'>Fat</CustomText>
+                  <TextInput onChangeText={(txt) => setnewFat(parseInt(txt))} placeholderTextColor={theme.text} placeholder='Enter new goal' style={{ width: '89%', height: 50, backgroundColor: theme.background2 }} className=' rounded-xl px-5' />
+
+                </View>
+
+                <View className='mb-5' style={{ width: "100%" }}>
+                  <CustomText className='mb-2'>Carbohydrate</CustomText>
+                  <TextInput onChangeText={(txt) => setnewCarbohydrate(parseInt(txt))} placeholderTextColor={theme.text} placeholder='Enter new goal' style={{ width: '89%', height: 50, backgroundColor: theme.background2 }} className=' rounded-xl px-5' />
+
+                </View>
+              </View>
+            )
+          }
           {activeHealthMenu == 'height' ? (
             <View style={{ width: "100%" }}>
               <Picker
@@ -204,21 +291,24 @@ const HealthFithnessSettings: React.FC<CommonThemeProp & NavigationProps> = ({na
                   />
                 ))}
               </Picker>
-              <Text className="text-lg text-center mb-2 font-bold">
+              <CustomText className="text-lg text-center mb-2 font-bold">
                 Height (FT/CM)
-              </Text>
-            </View>) : (
-            <View style={{ width: '100%' }} className='flex-row self-center items-center justify-between mb-5 '>
-              <TextInput onChangeText={(txt) => setvalueToUpdate(txt)} value={valueToUpdate ? valueToUpdate : ''} placeholderTextColor={theme.text} placeholder='Enter Height' style={{ width: '89%', height: 50, backgroundColor: theme.background2 }} className=' rounded-xl px-5' />
-              <View style={{ backgroundColor: theme.background2, width: '10%' }} className=' rounded-full'>
-                {/* <Text className='text-center'>lb</Text> */}
+              </CustomText>
+            </View>) : activeHealthMenu !== 'macros' ? (
+              <View style={{ width: '100%' }} className='flex-row self-center items-center justify-between mb-5 '>
+                <TextInput onChangeText={(txt) => setvalueToUpdate(txt)} value={valueToUpdate ? valueToUpdate : ''} placeholderTextColor={theme.text} placeholder='Enter Height' style={{ width: '89%', height: 50, backgroundColor: theme.background2, color: theme.text }} className=' rounded-xl px-5' />
+                <View style={{ backgroundColor: theme.background2, width: '10%' }} className=' rounded-full'>
+                  {/* <Text className='text-center'>lb</Text> */}
+                </View>
               </View>
+            ) : (
+            <View>
             </View>
           )}
 
 
 
-          <Button onPress={() => updateHealthInfo()} style={{ borderRadius: 50 }}>Update</Button>
+          <Button onPress={() => activeHealthMenu == 'macros' ? updateMacros() : updateHealthInfo()} style={{ borderRadius: 50 }}>Update</Button>
         </View>
 
       </RBSheet>
@@ -238,10 +328,10 @@ interface HealthFitnessMenuProps {
 const HealthFitnessMenu: React.FC<HealthFitnessMenuProps> = ({ theme, onClick, title, value }) => {
   return (
     <TouchableOpacity onPress={() => onClick ? onClick() : console.log(null)} style={{ backgroundColor: theme.background }} className='mb-5 px-3 py-2  rounded-xl flex-row items-center justify-between'>
-      <Text className='text-lg'>{title}</Text>
+      <CustomText className='text-lg'>{title}</CustomText>
 
       <View className='flex-row items-center'>
-        <Text className='text-lg'>{value}</Text>
+        <CustomText className='text-lg'>{value}</CustomText>
         <Icon name='chevron-right' />
       </View>
     </TouchableOpacity>

@@ -12,7 +12,6 @@ import { ThemeContext } from "../Store/ThemeContext";
 import { Icon } from "@rneui/base";
 import {
   getUserSearchHistory,
-  getUsersAccessToken,
   removeUserSearchHistory,
   saveUserSearch,
   searchFoodFromApi,
@@ -23,7 +22,6 @@ import { StatusBar } from "react-native";
 import CustomText from "../Components/CustomText";
 const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
   const inputRef = useRef<TextInput | null>(null);
-  const [accessToken, setaccessToken] = useState("");
   const [searchQuery, setsearchQuery] = useState("");
   const [searchResults, setsearchResults] = useState<any>([]);
   const [suggestions, setsuggestions] = useState([]);
@@ -32,11 +30,6 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
   const [searchHistory, setsearchHistory] = useState([]);
 
   useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getUsersAccessToken();
-      setaccessToken(token);
-    };
-    fetchToken();
     fetchUserSearchHistory();
   }, []);
 
@@ -58,7 +51,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
     setsearchResults([]);
     // testFunction()
     // Clear the existing timer
-    suggestText(text, setsuggestions, accessToken);
+    suggestText(text, setsuggestions);
     // if (timer) {
     //   clearTimeout(timer);
     // }
@@ -67,7 +60,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
     // setTimer(
     //   setTimeout(() => {
     //     if (searchQuery) {
-    //       suggestText(text, setsuggestions, accessToken);
+    //       suggestText(text, setsuggestions);
     //     }
     //   }, 300)
     // ); // 2000 milliseconds = 2 seconds
@@ -163,7 +156,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
           searchResults?.length == 0 &&
           suggestions?.length == 0 && (
             <View className="mx-5 mt-5 ">
-              <Text className="text-lg">Search History</Text>
+              <Text style={{color: theme.text}} className="text-lg">Search History</Text>
 
               {searchHistory?.map((search, index) => (
                 <TouchableOpacity
@@ -171,7 +164,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                   // style={{width: '100%'}}
                   className="flex-row  items-center mt-5 rounded-3xl "
                   onPress={() => {
-                    searchFoodFromApi(accessToken, search, setsearchResults);
+                    searchFoodFromApi( search, setsearchResults);
                   }}
                 >
                   <View
@@ -220,7 +213,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
                   className="flex-row gap-x-5 items-center mt-5 rounded-3xl"
                   onPress={() => {
                     saveUserSearch(item);
-                    searchFoodFromApi(accessToken, item, setsearchResults);
+                    searchFoodFromApi( item, setsearchResults);
                   }}
                 >
                   <View
@@ -247,7 +240,7 @@ const SearchFood: React.FC<NavigationProps> = ({ navigation }) => {
           {searchResults?.length == 0 && searchQuery !== "" && (
             <TouchableOpacity
               onPress={() =>
-                searchFoodFromApi(accessToken, searchQuery, setsearchResults)
+                searchFoodFromApi( searchQuery, setsearchResults)
               }
               className="flex-row gap-x-5 items-center mt-5 rounded-3xl"
             >

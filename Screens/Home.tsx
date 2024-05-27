@@ -19,7 +19,6 @@ import CaloriesHistory from "../Components/CaloriesHistory";
 import GoalSummary from "../Components/GoalSummary";
 import CaloriesBreakdown from "../Components/CaloriesBreakdown";
 import { Icon, Tooltip } from "@rneui/base";
-import { getUsersAccessToken } from "../utils/lib";
 import CaloriesDisplayCard from "../Components/CaloriesDisplayCard";
 import MacrosInfo from "../Components/MacrosInfo";
 import { useDispatch, useSelector } from "react-redux";
@@ -32,12 +31,14 @@ import { logBreakfast, logDinner, logLunch } from "../redux/reducers/mealsSlice"
 import { API_URL } from "@env"
 import * as Device from 'expo-device';
 import * as Notifications from 'expo-notifications';
+import AsyncStorage from "@react-native-async-storage/async-storage";
 const Home = ({ navigation }: any) => {
   const user = useContext(AuthContext)?.user;
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const [refetchMealHistory, setrefetchMealHistory] = useState(0);
   const mealsHistoryContext = useContext(MealsHistoryContext)
   const [tooltipOpen, settooltipOpen] = useState(false)
+  const authContext = useContext(AuthContext);
 
   const dispatch = useDispatch();
   const [refreshing, setRefreshing] = useState(false);
@@ -48,8 +49,7 @@ const Home = ({ navigation }: any) => {
   const [expoPushToken, setExpoPushToken] = useState<string | undefined>('');
   const [notification, setNotification] = useState<any>(false);
   useEffect(() => {
-    // console.log(user)
-    // alert("hello")
+    getUser()
     fetchMealHistory()
   }, [])
 
@@ -125,6 +125,10 @@ const Home = ({ navigation }: any) => {
       fatTotal += parseInt(foodData.fat);
     })
 
+    const proteinGoal = user?.protein ? user.protein : 0
+    const fatGoal = user?.fat ? user.fat : 0
+    const carbohydrateGoal = user?.carbohydrate ? user.carbohydrate : 0
+
     // console.log(initialMeals)
 
     dispatch(
@@ -133,6 +137,9 @@ const Home = ({ navigation }: any) => {
         carbohydrate: carbsTotal,
         protien: proteinTotal,
         fat: fatTotal,
+        proteinGoal,
+        fatGoal,
+        carbohydrateGoal
       })
     );
 
@@ -159,7 +166,9 @@ const Home = ({ navigation }: any) => {
   }
 
   const onRefresh = useCallback(() => {
+
     setRefreshing(true);
+    getUser()
     fetchMealHistory();
     settooltipOpen(true)
     setTimeout(() => {
@@ -172,6 +181,20 @@ const Home = ({ navigation }: any) => {
 
   const caloriesInformation = useSelector((state: RootState) => state.userCalories)
   const mealsInformation = useSelector((state: RootState) => state.userMeals)
+  const getUser = async () => {
+    try {
+      const res = await fetch(`http://${API_URL}/fitness-backend/api/user/index.php?id=${user?.id}`)
+
+    const data = await res.json();
+
+      // return;
+      await AsyncStorage.setItem('user', JSON.stringify(data.data))
+      authContext?.setuser(data.data);
+
+    } catch (error) {
+      console.log(error)
+    }
+  }
 
   // const notificationListener = useRef<any>();
   // const responseListener = useRef<any>();
@@ -213,6 +236,8 @@ const Home = ({ navigation }: any) => {
   //   registerForPushNotificationsAsync().then(token => setExpoPushToken(token));
 
   // }, []);
+
+
   return (
     <SafeAreaView
       style={{ backgroundColor: themeContext.theme.background, flex: 1 }}

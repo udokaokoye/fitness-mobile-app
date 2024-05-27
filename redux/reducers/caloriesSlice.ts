@@ -1,7 +1,7 @@
 // redux/reducers/counterSlice.js
 
 import { PayloadAction, createSlice } from "@reduxjs/toolkit";
-import { UsersCaloriesProp, logMealProps } from "../../utils/types";
+import { UsersCaloriesProp, logMealProps, logMealPropsFromBackend } from "../../utils/types";
 
 // ! Store users calories and macros goals in local storage and pull them from local storage and set them as the initial state
 
@@ -51,20 +51,20 @@ const caloriesSlice = createSlice({
       };
      return updatedData
     },
-    logMealFromBackend: (state, action:PayloadAction<logMealProps>) => {
+    logMealFromBackend: (state, action:PayloadAction<logMealPropsFromBackend>) => {
       const {macros, dailyCaloriesGoal, currentCaloriesConsumption} = state
       const updatedMacros = {
           protien: {
               value: action.payload.protien,
-              goal: macros.protien.goal,
+              goal: action.payload.proteinGoal,
             },
             carbohydrate: {
               value: action.payload.carbohydrate,
-              goal: macros.carbohydrate.goal,
+              goal: action.payload.carbohydrateGoal,
             },
             fat: {
               value:action.payload.fat,
-              goal: macros.fat.goal,
+              goal: action.payload.fatGoal,
             },
       }
     const updatedData = {

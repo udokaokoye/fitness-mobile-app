@@ -230,12 +230,14 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
             Add Food
           </Text>
 
+          <TouchableOpacity onPress={logMealHandler}>
           <Icon
             name="check"
             type="antdesign"
             color={theme.accentColor}
             style={{ textAlign: "right" }}
           />
+          </TouchableOpacity>
         </View>
 
         <ScrollView className="mt-5">
@@ -436,11 +438,14 @@ const FoodDetails: React.FC<NavigationProps & ComponentProps> = ({
             <TextInput
               multiline={true}
               placeholder="Comment Here..."
+              placeholderTextColor={theme.text}
               className="rounded-lg border mt-2 p-5"
               style={{
                 width: "100%",
                 height: 150,
                 borderColor: theme.lighterText,
+                color: theme.text
+      
               }}
               onChangeText={(txt) => setnote(txt)}
               value={note}

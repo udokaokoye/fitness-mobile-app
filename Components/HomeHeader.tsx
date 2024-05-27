@@ -29,7 +29,7 @@ const HomeHeader: React.FC<CommonThemeProp & NavigationProps> = ({ theme, naviga
           className=" rounded-full overflow-hidden"
         >
 
-          <Image style={{ width: 50, height: 50 }} source={{ uri: 'https://avatars.githubusercontent.com/u/61575961?v=4' }} />
+          <Image style={{ width: 50, height: 50 }} source={{ uri: user?.avatar ? user.avatar : 'https://t4.ftcdn.net/jpg/05/49/98/39/360_F_549983970_bRCkYfk0P6PP5fKbMhZMIb07mCJ6esXL.jpg' }} />
         </View>
         <View>
           <Text style={{ color: theme?.text }} className=" text-xl font-bold">Hello, {user?.firstName}</Text>

@@ -18,10 +18,12 @@ const mealHistory = mealsHistoryContext?.mealHistory
     <View className='px-5 mt-10'>
       <View className='flex-row items-center justify-between'>
       <Text style={{color: theme.text}} className='text-xl'>Meal History</Text>
-      <Text style={{color: theme.accentColor}} className=' text-base'>Show More</Text>
+      <TouchableOpacity onPress={() => navigation.navigate('mealHistory', {
+        mealHistory: mealHistory
+      })}><Text style={{color: theme.accentColor}} className=' text-base'>Show More</Text></TouchableOpacity>
       </View>
 
-        {mealHistory?.map((foodHistory: any) => (
+        {mealHistory?.reverse().slice(0, mealHistory?.length >= 3 ? 3 : mealHistory?.length).map((foodHistory: any) => (
                   <TouchableOpacity onPress={() => navigation.navigate('loggedFoodDetails', {food: foodHistory})} key={foodHistory.created_at} style={{backgroundColor: theme.background2}} className=' flex-row  justify-between items-center mt-5 rounded-lg  p-3'>
                   <View className='flex-row gap-x-5'>
                   {/* <View className=' rounded-full items-center justify-center' style={{backgroundColor: theme.accentColor, width: 50, height: 50}}>

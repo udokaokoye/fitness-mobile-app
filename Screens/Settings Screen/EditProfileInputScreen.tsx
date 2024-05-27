@@ -67,7 +67,7 @@ const EditProfileInputScreen: React.FC<
   };
 
   return (
-    <SafeAreaView>
+    <SafeAreaView style={{backgroundColor: theme.background, flex: 1}}>
       <View
         style={{ height: 30, position: "relative" }}
         className=" mx-8 flex-row justify-center items-center"
@@ -77,7 +77,7 @@ const EditProfileInputScreen: React.FC<
         </TouchableOpacity>
 
         <Text
-          style={{ width: "100%" }}
+          style={{ width: "100%", color: theme.text }}
           className="text-lg font-bold text-center capitalize"
         >
           {title}
@@ -98,6 +98,7 @@ const EditProfileInputScreen: React.FC<
               value={valueToUpdate}
               onChangeText={(txt) => setvalueToUpdate(txt)}
               placeholder="Enter Weight"
+              placeholderTextColor={theme.text}
               className=" text-right bg-transparent text-xl font-bold"
               style={{ width: "90%", color: theme.accentColor }}
             />
@@ -125,11 +126,13 @@ const EditProfileInputScreen: React.FC<
             value={valueToUpdate}
             onChangeText={(txt) => setvalueToUpdate(txt)}
             placeholder="Email Address"
+            placeholderTextColor={theme.text}
             className="px-3 py-2 rounded-lg border border-gray-300"
             style={{
               width: "100%",
               height: 40,
               backgroundColor: theme.background,
+              color: theme.text
             }}
           />
 

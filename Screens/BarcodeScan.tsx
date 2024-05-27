@@ -11,12 +11,11 @@ import { Icon } from "@rneui/base";
 import { NavigationProps } from "../utils/commonProps";
 import { ThemeContext } from "../Store/ThemeContext";
 import { blackTheme } from "../Store/themes";
-import { AutoFocus, Camera, CameraType, FlashMode } from "expo-camera";
+import { FocusMode, CameraView, CameraType, FlashMode } from "expo-camera";
 import { BarCodeScanner } from "expo-barcode-scanner";
-import { getUsersAccessToken, searchFoodWithBarcode } from "../utils/lib";
+import { searchFoodWithBarcode } from "../utils/lib";
 import { TouchableNativeFeedback } from "react-native";
 const BarcodeScan: React.FC<NavigationProps> = ({ navigation }) => {
-  const [accessToken, setaccessToken] = useState("");
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
   const [hasPermission, setHasPermission] = useState<boolean>(false);
@@ -31,18 +30,13 @@ const BarcodeScan: React.FC<NavigationProps> = ({ navigation }) => {
 
     getBarCodeScannerPermissions();
   }, []);
-  useEffect(() => {
-    const fetchToken = async () => {
-      const token = await getUsersAccessToken();
-      setaccessToken(token);
-    };
-    fetchToken();
-  }, []);
 
   const handleBarCodeScanned = async (args: any) => {
     setScanned(true);
     setflashOn(false)
-    const foodId = await searchFoodWithBarcode(accessToken, args.data);
+    
+
+    const foodId = await searchFoodWithBarcode( args.data);
     if (foodId == null) {
       alert("Food Not Found")
       return
@@ -86,7 +80,7 @@ const BarcodeScan: React.FC<NavigationProps> = ({ navigation }) => {
           style={{ height: 400, width: "90%" }}
         >
 
-          <Camera
+          <CameraView
             style={{
               position: 'absolute',
               top: 0,
@@ -94,10 +88,12 @@ const BarcodeScan: React.FC<NavigationProps> = ({ navigation }) => {
               bottom: 0,
               right: 0
             }}
-            ratio='16:9'
-            onBarCodeScanned={scanned ? undefined : handleBarCodeScanned}
-          flashMode={flashOn ? FlashMode.torch : FlashMode.off}
-          autoFocus={AutoFocus.on}
+            onBarcodeScanned={scanned ? undefined : handleBarCodeScanned}
+            enableTorch ={!flashOn ? true : false}
+            barcodeScannerSettings={{
+              barcodeTypes: ['upc_a', 'upc_e']
+            }}
+          
           zoom={Platform.OS === 'ios' ? 0.015 : 0}
           // focusDepth={0}
           />

@@ -25,6 +25,9 @@ export type UserInfoProps = {
   fasting_preference: string;
   favorite_foods: string;
   disliked_foods: string;
+  protein: number,
+  fat:number,
+  carbohydrate:number
   [key: string]: any; 
 }
 

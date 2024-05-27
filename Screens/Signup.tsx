@@ -19,12 +19,15 @@ import { Icon } from "@rneui/base";
 import RBSheet from "react-native-raw-bottom-sheet";
 import { set } from "lodash";
 import { API_URL, APP_NAME } from "@env";
+import CustomText from "../Components/CustomText";
 
 const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
   const authContext = useContext(AuthContext);
   const [accessToken, setaccessToken] = useState("");
+
+  
   // Basic Info
   const [email, setemail] = useState("");
   const [firstName, setfirstName] = useState("");
@@ -43,6 +46,10 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
   //   Activity / Goals
   const [activityLevel, setactivityLevel] = useState("");
   const [goalWeight, setgoalWeight] = useState("");
+
+  const [protein, setprotein] = useState(50)
+  const [carbohydrate, setcarbohydrate] = useState(50)
+  const [fat, setfat] = useState(50)
 
   // Diet
   const [activeDietSelection, setactiveDietSelection] = useState("");
@@ -209,6 +216,9 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
     formData.append("goalWeight", goalWeight);
     formData.append("favoriteFoods", likedFoods.join());
     formData.append("dislikedFoods", dislikedFoods.join());
+    formData.append('protein', protein.toString())
+    formData.append('carbohydrate', carbohydrate.toString())
+    formData.append('fat', fat.toString())
 
     formData.append("dailyCalories", caloriesGoal);
     formData.append("createdAt", moment().unix().toString());
@@ -468,7 +478,7 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
               />
 
               <Text className="text-center font-bold text-lg mt-5">
-                Daily Calories Goal Weight ({caloriesGoal} Kcal)
+                Daily Calories Goal ({caloriesGoal} Kcal)
               </Text>
 
               <TextInput
@@ -481,6 +491,56 @@ const Signup: React.FC<NavigationProps> = ({ navigation }) => {
                 style={{ width: "100%", height: 50 }}
               />
             </View>
+
+            <Text className="text-center font-bold text-lg mt-5">
+                Macros (measured in g)
+              </Text>
+
+              <View className="flex-row justify-between mt-5">
+
+                <View style={{width: '30%'}}>
+                  <CustomText className='text-center'>Protein</CustomText>
+                  <TextInput
+                autoCapitalize="none"
+                inputMode="numeric"
+                returnKeyType="done"
+                onChangeText={(txt) => setprotein(txt ? parseInt(txt) : 0)}
+                placeholder="0 g"
+                value={protein.toString()}
+                className="bg-gray-200 border-2 border-gray-300 rounded-lg self-center px-5 mt-3"
+                style={{ width: "100%", height: 50 }}
+              />
+                </View>
+
+                <View style={{width: '30%'}}>
+                  <CustomText className='text-center'>Carbohydrate</CustomText>
+                  <TextInput
+                autoCapitalize="none"
+                inputMode="numeric"
+                returnKeyType="done"
+                onChangeText={(txt) => setcarbohydrate(txt ? parseInt(txt) : 0)}
+                placeholder="0 g"
+                value={carbohydrate.toString()}
+                className="bg-gray-200 border-2 border-gray-300 rounded-lg self-center px-5 mt-3"
+                style={{ width: "100%", height: 50 }}
+              />
+                </View>
+
+                <View style={{width: '30%'}}>
+                  <CustomText className='text-center'>Fat</CustomText>
+                  <TextInput
+                autoCapitalize="none"
+                inputMode="numeric"
+                returnKeyType="done"
+                onChangeText={(txt) => setfat(txt ? parseInt(txt) : 0)}
+                placeholder="0 g"
+                value={fat.toString()}
+                className="bg-gray-200 border-2 border-gray-300 rounded-lg self-center px-5 mt-3"
+                style={{ width: "100%", height: 50 }}
+              />
+                </View>
+                </View>
+                <CustomText className='mt-3 italic'>You'll be able to set more macros later in the settings.</CustomText>
           </>
         )}
 

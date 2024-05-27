@@ -12,7 +12,7 @@ import HomeHeader from "../Components/HomeHeader";
 import FastingCard from "../Components/FastingCard";
 import { useSelector } from "react-redux";
 import CustomText from "../Components/CustomText";
-import { RootState } from "../utils/types";
+import { RootState, fastingHistory } from "../utils/types";
 import moment from "moment";
 import FastingCircle from "../Components/FastingCircle";
 import { FastingContext } from "../Store/FastingContext";
@@ -22,8 +22,9 @@ import { API_URL } from "@env";
 import { set } from "lodash";
 import { CommonThemeProp, NavigationProps } from "../utils/commonProps";
 import ProgressCircle from "../Components/ProgressCircle";
+import { reauthenticateWithCredential } from "firebase/auth";
 
-const Fasting: React.FC<NavigationProps> = ({navigation}) => {
+const Fasting: React.FC<NavigationProps> = ({ navigation }) => {
   const themeContext = useContext(ThemeContext) || { theme: blackTheme };
   const theme = themeContext.theme;
 
@@ -36,6 +37,9 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
   );
   const fastingContext = useContext(FastingContext);
   const [fastingId, setfastingId] = useState(null);
+
+  // FASTING HISTORY
+  const [fastingHistory, setfastingHistory] = useState<null | []>(null)
 
   const isFasting = fastingContext?.isFasting;
   const user = useContext(AuthContext)?.user;
@@ -58,6 +62,7 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
   }, [isFasting]);
 
   useEffect(() => {
+    fetchFatsingHistory();
     fetchAndResumeFasting();
     // console.log(user?.fasting_preference);
   }, []);
@@ -193,6 +198,7 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
       console.log(data.message);
     } else {
       const fastingInfo = data.data;
+      // console.log(fastingInfo)
       setfastingId(fastingInfo.id);
       // console.log(fastingInfo.completed ? "completed" : "not completed")
       if (!fastingInfo.completed) {
@@ -209,6 +215,35 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
       }
     }
   };
+
+  const fetchFatsingHistory = async () => {
+    const res = await fetch(
+      `http://${API_URL}/fitness-backend/api/fasting/index.php?userId=${user?.id}`
+    );
+    const data = await res.json();
+
+    if (data.status !== 200) {
+      alert("Unable to retrive fasting history.")
+      return;
+    }
+    // console.log(data.data)
+    setfastingHistory(data.data)
+  }
+  function calculateDurationInMinutes(startTimeUnix: number, finishTimeUnix: number) {
+    const startTimeMs = startTimeUnix * 1000;
+    const finishTimeMs = finishTimeUnix * 1000;
+
+
+    const durationMs = finishTimeMs - startTimeMs;
+
+    const durationMinutes = durationMs / (1000 * 60);
+
+    return durationMinutes;
+  }
+
+
+
+
   return (
     <SafeAreaView
       style={{ backgroundColor: themeContext.theme.background, flex: 1 }}
@@ -283,11 +318,11 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
                     {moment(fastingContext.fastingInfo.startTime).format(
                       "D MMM"
                     ) ==
-                    moment(fastingContext.fastingInfo.endTime).format("D MMM")
+                      moment(fastingContext.fastingInfo.endTime).format("D MMM")
                       ? "Today"
                       : moment(fastingContext.fastingInfo.endTime).format(
-                          "MMM D"
-                        )}
+                        "MMM D"
+                      )}
                     ,{" "}
                     {moment(fastingContext.fastingInfo.endTime).format(
                       "hh:mm a"
@@ -318,7 +353,7 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
               What are you eating?
             </CustomText>
             <TouchableOpacity
-              onPress={() => console.log("navigate to log meal screen")}
+              onPress={() => navigation.navigate('searchFood')}
               className="rounded-full bg-gray-200 w-10 h-10 justify-center items-center"
             >
               <Text className="font-bold text-xl">+</Text>
@@ -327,34 +362,41 @@ const Fasting: React.FC<NavigationProps> = ({navigation}) => {
         </View>
 
         <View className="mx-3 rounded-3xl p-5 mt-3" style={{ backgroundColor: theme.background2 }} >
-          {/* <CustomText className="text-xl font-bold mt-5">
+          <CustomText className="text-xl font-bold mt-5">
             Fasting History
-          </CustomText> */}
+          </CustomText>
 
-          <DayCIrcle theme={theme} />
+          <View className="flex-row justify-between mt-3">
+            {fastingHistory?.reverse().slice(0, 5).map((fastHist: fastingHistory) => (
+              <View key={fastHist.id}>
+                <CustomText>{moment(fastHist.startTime).format('M/DD')}</CustomText>
+                <CustomText>{fastHist.completed ? moment(fastHist.endTime).diff(fastHist.startTime, 'minute') : '?'}</CustomText>
+              </View>
+            ))}
+          </View>
+
         </View>
       </ScrollView>
     </SafeAreaView>
   );
 };
 
-const DayCIrcle:  React.FC<CommonThemeProp> = ({theme}) => {
+export default Fasting
+
+const DayCIrcle: React.FC<CommonThemeProp> = ({ theme }) => {
   return (
     <View>
-      <Text>Wed</Text>
       <ProgressCircle
-              progressValue={0}
-              progressTitle={null}
-              strokeSize={5}
-              size={100}
-              percentageUsed={90}
-              color={'red'}
-              progressValueTextSize={40}
-              progressTitleTextSize={16}
-              theme={theme}
-            />
+        progressValue={0}
+        progressTitle={null}
+        strokeSize={5}
+        size={100}
+        percentageUsed={90}
+        color={'red'}
+        progressValueTextSize={40}
+        progressTitleTextSize={16}
+        theme={theme}
+      />
     </View>
   );
-    }
-
-export default Fasting;
+}

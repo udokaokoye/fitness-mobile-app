@@ -15,8 +15,8 @@ const LoggedFoodDetails: React.FC<NavigationProps & ComponentProps> = ( {navigat
     const themeContext = useContext(ThemeContext) || { theme: blackTheme };
     const theme = themeContext.theme;
   return (
-    <SafeAreaView>
-      <View className="flex-row items-center justify-between mx-5 pb-3 mt-3">
+    <SafeAreaView className='flex-1' style={{backgroundColor: theme.background}}>
+      <View style={{backgroundColor: theme.background}} className="flex-row items-center justify-between mx-5 pb-3 mt-3">
         <Icon
           name="back"
           type="antdesign"
@@ -71,10 +71,10 @@ const LoggedFoodDetails: React.FC<NavigationProps & ComponentProps> = ( {navigat
             </View>
           </View>
 
-          <Text className='text-xl font-bold mt-5'>{food.name}</Text>
+          <Text style={{ color: theme.text }} className='text-xl font-bold mt-5'>{food.name}</Text>
 
           <Text className='mt-3'>{food.note}</Text>
-          <Text className='mt-8 font-bold'>Logged at: <Text style={{color: theme.accentColor}}>{moment.unix(food.created_at).format("hh:mm a")}</Text> on <Text style={{color: theme.accentColor}}>{moment.unix(food.created_at).format("DD MMM YYYY")}</Text></Text>
+          <Text style={{ color: theme.text }} className='mt-8 font-bold'>Logged at: <Text style={{color: theme.accentColor}}>{moment.unix(food.created_at).format("hh:mm a")}</Text> on <Text style={{color: theme.accentColor}}>{moment.unix(food.created_at).format("DD MMM YYYY")}</Text></Text>
           {/* <Text>{food.created_at}</Text> */}
 
           <TouchableOpacity onPress={() => navigation.navigate('foodDetails', {
